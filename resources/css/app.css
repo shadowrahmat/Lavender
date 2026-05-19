@@ -1,0 +1,193 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+@source '../**/*.vue';
+
+@theme {
+    --font-sans: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+    --font-display: 'Dancing Script', sans-serif;
+    --font-body: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+
+    --color-primary: #6F2C91;
+    --color-primary-dark: #3B145A;
+    --color-primary-light: #E9D8F4;
+    --color-lavender-bg: #F8F2FB;
+    --color-cream: #FFF8F0;
+    --color-beige: #F4E3C1;
+    --color-charcoal: #1F1B24;
+    --color-muted: #6B6470;
+    --color-success: #2E9D63;
+    --color-warning: #F2A93B;
+    --color-error: #D64545;
+
+    --color-purple-50: #F8F2FB;
+    --color-purple-100: #E9D8F4;
+    --color-purple-200: #D4B3E8;
+    --color-purple-300: #B87FD6;
+    --color-purple-400: #9B4DC4;
+    --color-purple-500: #6F2C91;
+    --color-purple-600: #5A2278;
+    --color-purple-700: #461A5E;
+    --color-purple-800: #3B145A;
+    --color-purple-900: #2A0D42;
+}
+
+@layer base {
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        font-family: var(--font-body);
+        background-color: #FFFFFF;
+        color: var(--color-charcoal);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        font-family: var(--font-display);
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+}
+
+@layer components {
+    .btn-primary {
+        @apply inline-flex items-center justify-center px-6 py-3 rounded-full font-semibold text-white transition-all duration-300;
+        background: linear-gradient(135deg, #6F2C91, #3B145A);
+        box-shadow: 0 4px 15px rgba(111, 44, 145, 0.3);
+    }
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #5A2278, #2A0D42);
+        box-shadow: 0 6px 20px rgba(111, 44, 145, 0.45);
+        transform: translateY(-1px);
+    }
+    .btn-primary:active {
+        transform: scale(0.97);
+        box-shadow: 0 2px 8px rgba(111, 44, 145, 0.3);
+    }
+
+    .btn-secondary {
+        @apply inline-flex items-center justify-center px-6 py-3 rounded-full font-semibold transition-all duration-300;
+        background: transparent;
+        border: 2px solid #6F2C91;
+        color: #6F2C91;
+    }
+    .btn-secondary:hover {
+        background: #6F2C91;
+        color: white;
+        transform: translateY(-1px);
+    }
+
+    .card {
+        @apply bg-white rounded-2xl overflow-hidden transition-all duration-300;
+        box-shadow: 0 2px 20px rgba(111, 44, 145, 0.08);
+    }
+    @media (hover: hover) {
+        .card:hover {
+            box-shadow: 0 8px 40px rgba(111, 44, 145, 0.15);
+            transform: translateY(-2px);
+        }
+    }
+
+    .section-title {
+        font-family: var(--font-display);
+        @apply text-3xl sm:text-4xl font-bold text-charcoal;
+    }
+
+    .gradient-purple {
+        background: linear-gradient(135deg, #6F2C91 0%, #3B145A 100%);
+    }
+
+    .gradient-soft {
+        background: linear-gradient(135deg, #F8F2FB 0%, #E9D8F4 100%);
+    }
+
+    .glass {
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .input-field {
+        @apply w-full px-4 py-3 rounded-xl border transition-all duration-200 text-charcoal;
+        border-color: #E9D8F4;
+        background: #FDFAFF;
+    }
+    .input-field:focus {
+        outline: none;
+        border-color: #6F2C91;
+        box-shadow: 0 0 0 3px rgba(111, 44, 145, 0.1);
+    }
+
+    .badge {
+        @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold;
+    }
+    .badge-purple {
+        background: #E9D8F4;
+        color: #6F2C91;
+    }
+    .badge-success {
+        background: #D1FAE5;
+        color: #065F46;
+    }
+    .badge-warning {
+        background: #FEF3C7;
+        color: #92400E;
+    }
+    .badge-error {
+        background: #FEE2E2;
+        color: #991B1B;
+    }
+}
+
+@layer utilities {
+    .text-gradient {
+        background: linear-gradient(135deg, #6F2C91, #B87FD6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .animate-float {
+        animation: float 6s ease-in-out infinite;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-12px); }
+    }
+
+    .animate-fade-in {
+        animation: fadeIn 0.6s ease-out forwards;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
+    .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+}
+
+/* Swiper custom styles */
+.swiper-pagination-bullet-active {
+    background: #6F2C91 !important;
+}
+.swiper-button-next,
+.swiper-button-prev {
+    color: #6F2C91 !important;
+}

@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(php --version)",
+      "Bash(composer --version)",
+      "Bash(npm --version)",
+      "PowerShell(composer create-project laravel/laravel \"e:\\\\lavender_tmp\" --prefer-dist 2>&1)",
+      "PowerShell(Get-ChildItem \"e:\\\\lavender_tmp\" -Force | ForEach-Object { Move-Item $_.FullName \"e:\\\\Lavender\\\\\" -Force }; Write-Host \"Done\")",
+      "PowerShell(New-Item -ItemType Directory -Force \"e:\\\\Lavender\\\\public\\\\images\")",
+      "Bash(composer require *)"
+    ]
+  }
+}

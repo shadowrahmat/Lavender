@@ -1,0 +1,31 @@
+<template>
+  <AppLayout>
+    <Head title="Privacy Policy" />
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <h1 class="font-display text-4xl font-bold text-charcoal mb-4">Privacy Policy</h1>
+      <p class="text-muted mb-10">Last updated: January 2024</p>
+      <div class="prose prose-purple max-w-none space-y-6 text-muted leading-relaxed">
+        <section>
+          <h2 class="font-display text-2xl font-semibold text-charcoal mb-3">1. Information We Collect</h2>
+          <p>When you use Lavender Food & Bakery's website, we collect information including your name, email address, phone number, and delivery address when you place an order or create an account.</p>
+        </section>
+        <section>
+          <h2 class="font-display text-2xl font-semibold text-charcoal mb-3">2. How We Use Your Information</h2>
+          <p>We use your information to process orders, provide customer support, send order updates, and improve our services. We do not sell your personal information to third parties.</p>
+        </section>
+        <section>
+          <h2 class="font-display text-2xl font-semibold text-charcoal mb-3">3. Data Security</h2>
+          <p>We implement appropriate security measures to protect your personal information. All sensitive data is encrypted and stored securely.</p>
+        </section>
+        <section>
+          <h2 class="font-display text-2xl font-semibold text-charcoal mb-3">4. Contact Us</h2>
+          <p>If you have any questions about our Privacy Policy, please contact us at hello@lavenderfoodnbakery.com.</p>
+        </section>
+      </div>
+    </div>
+  </AppLayout>
+</template>
+<script setup>
+import { Head } from '@inertiajs/vue3'
+import AppLayout from '@/Layouts/AppLayout.vue'
+</script>
