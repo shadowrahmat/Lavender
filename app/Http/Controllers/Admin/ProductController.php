@@ -18,20 +18,26 @@ class ProductController extends Controller
             ->latest()
             ->paginate(20)
             ->through(fn($p) => [
-                'id' => $p->id,
-                'name' => $p->name,
-                'slug' => $p->slug,
-                'price' => $p->price,
-                'discount_price' => $p->discount_price,
-                'stock' => $p->stock,
-                'is_active' => $p->is_active,
-                'is_featured' => $p->is_featured,
-                'featured_image_url' => $p->featured_image_url,
-                'category' => ['name' => $p->category->name],
+                'id'                  => $p->id,
+                'name'                => $p->name,
+                'slug'                => $p->slug,
+                'category_id'         => $p->category_id,
+                'short_description'   => $p->short_description,
+                'description'         => $p->description,
+                'ingredients'         => $p->ingredients,
+                'price'               => $p->price,
+                'discount_price'      => $p->discount_price,
+                'weight'              => $p->weight,
+                'stock'               => $p->stock,
+                'is_active'           => $p->is_active,
+                'is_featured'         => $p->is_featured,
+                'featured_image_url'  => $p->featured_image_url,
+                'category'            => ['name' => $p->category->name],
             ]);
 
         return Inertia::render('Admin/Products/Index', [
-            'products' => $products,
+            'products'   => $products,
+            'categories' => Category::where('is_active', true)->orderBy('name')->get(['id', 'name']),
         ]);
     }
 
