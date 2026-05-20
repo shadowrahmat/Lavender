@@ -12,6 +12,14 @@ class HomeController extends Controller
 {
     public function index(): Response
     {
+        $heroProducts = Product::with('category')
+            ->where('is_active', true)
+            ->where('show_on_hero', true)
+            ->latest()
+            ->take(3)
+            ->get()
+            ->map(fn($p) => $this->formatProduct($p));
+
         $featuredProducts = Product::with('category')
             ->where('is_active', true)
             ->where('is_featured', true)
@@ -41,9 +49,10 @@ class HomeController extends Controller
             ->map(fn($p) => $this->formatProduct($p));
 
         return Inertia::render('Home', [
+            'heroProducts'     => $heroProducts,
             'featuredProducts' => $featuredProducts,
-            'categories' => $categories,
-            'popularProducts' => $popularProducts,
+            'categories'       => $categories,
+            'popularProducts'  => $popularProducts,
         ]);
     }
 

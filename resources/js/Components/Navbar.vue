@@ -1,7 +1,7 @@
 <template>
   <nav
     class="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
-    :class="scrolled ? 'bg-white shadow-sm border-b border-purple-100/50' : 'bg-transparent'"
+    :class="scrolled ? 'bg-white shadow-sm border-b border-purple-100/50' : 'bg-transparent hero-nav'"
   >
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-16 md:h-20">
@@ -11,7 +11,8 @@
           <img
             src="/images/Lavender-Logo.png"
             alt="Lavender Food & Bakery"
-            class="h-10 md:h-12 w-auto object-contain transition-transform duration-300 group-hover:scale-[1.03]"
+            class="h-10 md:h-12 w-auto object-contain transition-all duration-300 group-hover:scale-[1.03]"
+            :class="scrolled ? '' : 'brightness-0 invert'"
           >
         </Link>
 
@@ -60,8 +61,8 @@
                 {{ auth.user.name[0].toUpperCase() }}
               </div>
               <ChevronDownIcon
-                class="w-3.5 h-3.5 text-muted hidden md:block transition-transform duration-200"
-                :class="userMenuOpen ? 'rotate-180' : ''" />
+                class="w-3.5 h-3.5 hidden md:block transition-all duration-200"
+                :class="[userMenuOpen ? 'rotate-180' : '', scrolled ? 'text-muted' : 'text-white/70']" />
             </button>
             <transition name="dropdown">
               <div v-if="userMenuOpen"
@@ -266,7 +267,11 @@ let debounceTimer   = null
 const handleScroll = () => { scrolled.value = window.scrollY > 20 }
 
 const isActive = (name) => {
-  return route().current(name + '*') ? 'text-primary font-semibold' : 'text-charcoal'
+  const active = route().current(name + '*')
+  if (scrolled.value) {
+    return active ? 'text-primary font-semibold' : 'text-charcoal'
+  }
+  return active ? 'text-white font-semibold' : 'text-white/80'
 }
 
 const openCart = () => { window.dispatchEvent(new Event('open-cart')) }
@@ -347,6 +352,18 @@ onUnmounted(() => {
 .icon-btn {
   @apply p-2.5 rounded-xl hover:bg-purple-50 text-muted hover:text-primary transition-all duration-200;
 }
+
+/* Transparent/hero state overrides */
+.hero-nav .icon-btn {
+  @apply text-white/80 hover:text-white hover:bg-white/10;
+}
+.hero-nav .nav-link {
+  @apply hover:text-white;
+}
+.hero-nav .nav-link::after {
+  @apply bg-white;
+}
+
 .nav-link {
   @apply text-sm font-medium transition-colors hover:text-primary relative;
 }

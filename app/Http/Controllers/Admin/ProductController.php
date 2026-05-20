@@ -31,6 +31,7 @@ class ProductController extends Controller
                 'stock'               => $p->stock,
                 'is_active'           => $p->is_active,
                 'is_featured'         => $p->is_featured,
+                'show_on_hero'        => $p->show_on_hero,
                 'featured_image_url'  => $p->featured_image_url,
                 'category'            => ['name' => $p->category->name],
             ]);
@@ -60,8 +61,9 @@ class ProductController extends Controller
             'discount_price' => 'nullable|numeric|min:0|lt:price',
             'weight' => 'nullable|string|max:50',
             'stock' => 'required|integer|min:0',
-            'is_featured' => 'boolean',
-            'is_active' => 'boolean',
+            'is_featured'   => 'boolean',
+            'show_on_hero'  => 'boolean',
+            'is_active'     => 'boolean',
             'featured_image' => 'nullable|image|max:2048',
         ]);
 
@@ -89,8 +91,9 @@ class ProductController extends Controller
                 'discount_price' => $product->discount_price,
                 'weight' => $product->weight,
                 'stock' => $product->stock,
-                'is_featured' => $product->is_featured,
-                'is_active' => $product->is_active,
+                'is_featured'   => $product->is_featured,
+                'show_on_hero'  => $product->show_on_hero,
+                'is_active'     => $product->is_active,
                 'featured_image_url' => $product->featured_image_url,
             ],
             'categories' => Category::where('is_active', true)->orderBy('name')->get(['id', 'name']),
@@ -109,8 +112,9 @@ class ProductController extends Controller
             'discount_price' => 'nullable|numeric|min:0',
             'weight' => 'nullable|string|max:50',
             'stock' => 'required|integer|min:0',
-            'is_featured' => 'boolean',
-            'is_active' => 'boolean',
+            'is_featured'   => 'boolean',
+            'show_on_hero'  => 'boolean',
+            'is_active'     => 'boolean',
             'featured_image' => 'nullable|image|max:2048',
         ]);
 

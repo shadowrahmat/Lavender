@@ -102,7 +102,14 @@
                 <input v-model="form.is_featured" type="checkbox" class="rounded text-primary">
                 <div>
                   <p class="font-medium text-charcoal text-sm">Featured</p>
-                  <p class="text-muted text-xs">Show on homepage</p>
+                  <p class="text-muted text-xs">Show in featured products section</p>
+                </div>
+              </label>
+              <label class="flex items-center gap-3 cursor-pointer p-3 rounded-xl hover:bg-purple-50 transition-colors border border-purple-100">
+                <input v-model="form.show_on_hero" type="checkbox" class="rounded text-primary">
+                <div>
+                  <p class="font-medium text-charcoal text-sm">Show on Hero Section</p>
+                  <p class="text-muted text-xs">Display in homepage hero banner (max 3 products — latest 3 selected will show)</p>
                 </div>
               </label>
             </div>
@@ -143,8 +150,9 @@ const form = ref({
   discount_price: props.product?.discount_price || '',
   weight: props.product?.weight || '',
   stock: props.product?.stock || 0,
-  is_active: props.product?.is_active ?? true,
-  is_featured: props.product?.is_featured ?? false,
+  is_active:     props.product?.is_active ?? true,
+  is_featured:   props.product?.is_featured ?? false,
+  show_on_hero:  props.product?.show_on_hero ?? false,
   featured_image: null,
 })
 

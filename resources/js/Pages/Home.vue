@@ -5,51 +5,25 @@
     <!-- ======= HERO SECTION ======= -->
     <section
       ref="heroRef"
-      class="-mt-16 md:-mt-20 relative min-h-[85vh] sm:min-h-screen flex items-center overflow-hidden select-none"
+      class="-mt-16 md:-mt-20 relative min-h-[85vh] sm:min-h-screen flex items-center overflow-hidden select-none hero-section-bg"
       @mousemove="onMouseMove"
     >
-      <!-- ── Background image slider ── -->
-      <!-- isolation:isolate traps slide z-indices inside; overlay outside is always on top -->
-      <div class="absolute inset-0 overflow-hidden" style="background:#1a0535; isolation:isolate;">
-        <div
-          v-for="(img, i) in bannerImages" :key="i"
-          class="banner-slide absolute inset-0"
-          :class="{ active: i === currentBanner, prev: i === prevBanner }"
-        >
-          <img :src="img" alt="" class="banner-img w-full h-full object-cover" :style="{ animationDelay: `${i * -3}s` }">
-        </div>
-      </div>
-
-      <!-- Overlay sits OUTSIDE the slides container — completely decoupled from
-           slide transitions, always painted on top, never fades in/out -->
-      <div class="absolute inset-0 banner-overlay pointer-events-none"></div>
-      <div class="absolute inset-x-0 bottom-0 h-40 bg-linear-to-t from-black/30 to-transparent pointer-events-none"></div>
-
-      <!-- Dot grid overlay -->
+      <!-- Subtle dot texture -->
       <div class="absolute inset-0 dot-grid pointer-events-none opacity-[0.045]"></div>
 
-      <!-- Parallax blob layer 1 (far) -->
-      <div class="absolute inset-0 pointer-events-none" :style="blobStyle(22)">
-        <div class="absolute -top-40 -right-40 w-[700px] h-[700px] rounded-full bg-purple-500/25 blur-[130px]"></div>
-      </div>
+      <!-- Ambient glow — right side behind image cluster -->
+      <div class="absolute -right-20 top-1/2 -translate-y-1/2 w-175 h-175 rounded-full bg-purple-500/15 blur-[130px] pointer-events-none"></div>
 
-      <!-- Parallax blob layer 2 (mid) -->
-      <div class="absolute inset-0 pointer-events-none" :style="blobStyle(-16)">
-        <div class="absolute -bottom-48 -left-32 w-[550px] h-[550px] rounded-full bg-violet-700/20 blur-[110px]"></div>
-      </div>
+      <!-- Ambient glow — bottom left accent -->
+      <div class="absolute -left-20 bottom-0 w-112.5 h-112.5 rounded-full bg-violet-700/10 blur-[120px] pointer-events-none"></div>
 
-      <!-- Parallax blob layer 3 (near) -->
-      <div class="absolute inset-0 pointer-events-none" :style="blobStyle(10)">
-        <div class="absolute top-1/3 left-1/4 w-[300px] h-[300px] rounded-full bg-purple-400/15 blur-[90px]"></div>
-      </div>
-
-      <!-- Background sparkle particles -->
+      <!-- Sparkle particles -->
       <div class="absolute inset-0 pointer-events-none">
         <div v-for="p in bgParticles" :key="p.id" class="absolute rounded-full bg-white" :style="p.style"></div>
       </div>
 
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full relative z-10">
-        <div class="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center py-20 sm:py-24 lg:py-32">
+        <div class="grid lg:grid-cols-2 gap-6 lg:gap-16 items-center pt-24 pb-10 sm:pt-28 sm:pb-14 lg:py-32">
 
           <!-- ── Left: Copy ── -->
           <div class="text-center lg:text-left" :style="blobStyle(-8)">
@@ -98,95 +72,183 @@
             </div>
           </div>
 
-          <!-- ── Right: Interactive Orbit Visual ── -->
-          <div class="hidden lg:flex items-center justify-center" :style="blobStyle(18)">
-            <div class="relative w-[440px] h-[440px]">
+          <!-- ── Right: Dynamic Hero Product Cards ── -->
+          <!--
+            Layout (420 × 500px):
+            Left column  (x 0–200):  Card 1 — tall main card, -3° tilt
+            Right column (x 215–420): Card 2 (top) + Card 3 (bottom) stacked with 30px gap
+            Bottom row:  Orders pill (left) + Rating pill (right), clear of all cards
+          -->
+          <div class="hidden lg:flex items-center justify-center" :style="blobStyle(8)">
+            <div class="relative" style="width:420px; height:500px;">
 
-              <!-- Outermost slow-pulse ring -->
-              <div class="absolute inset-0 rounded-full border border-white/10 outer-pulse"></div>
-
-              <!-- Orbit dashed track -->
-              <div class="absolute inset-8 rounded-full border border-dashed border-white/15"></div>
-
-              <!-- Inner counter-rotating solid ring -->
-              <div class="absolute inset-20 rounded-full border border-white/10 spin-slow-reverse"></div>
-
-              <!-- Innermost faint ring -->
-              <div class="absolute inset-32 rounded-full border border-white/8"></div>
-
-              <!-- Center glow ping -->
-              <div class="absolute inset-36 rounded-full">
-                <div class="absolute inset-0 rounded-full bg-purple-300/20 animate-ping" style="animation-duration:3s;"></div>
+              <!-- Ambient glow -->
+              <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div class="w-64 h-64 rounded-full bg-purple-400/20 blur-[70px]"></div>
               </div>
 
-              <!-- Center icon badge -->
-              <div class="absolute inset-32 rounded-full gradient-purple flex items-center justify-center z-20 shadow-2xl shadow-purple-900/60 ring-2 ring-white/10 ring-offset-0">
-                <CakeIcon class="w-16 h-16 text-white drop-shadow-xl" />
+              <!-- ── Card 1 — left column, main tall card, -3° tilt ── -->
+              <div class="float-wrap absolute z-20" style="top:52px; left:0; --float-dur:4.5s; --float-delay:0s">
+                <Link v-if="heroProducts?.[0]"
+                  :href="route('shop.show', heroProducts[0].slug)"
+                  class="food-img-card hero-fade-up block"
+                  style="width:196px; height:298px; transform:rotate(-3deg); animation-delay:0.6s">
+                  <img :src="heroProducts[0].featured_image_url" :alt="heroProducts[0].name" class="w-full h-full object-cover">
+                  <div class="food-img-label">
+                    <p class="text-white/65 text-[10px] mb-0.5">{{ heroProducts[0].category?.name }}</p>
+                    <p class="text-white text-xs font-bold leading-tight line-clamp-1">{{ heroProducts[0].name }}</p>
+                    <p class="text-white/90 text-[11px] font-semibold mt-1">৳{{ heroProducts[0].final_price }}</p>
+                  </div>
+                </Link>
+                <div v-else class="food-img-card food-img-card--placeholder hero-fade-up"
+                  style="width:196px; height:298px; transform:rotate(-3deg); animation-delay:0.6s">
+                  <div class="food-img-label"><p class="text-white/40 text-xs">No product set</p></div>
+                </div>
               </div>
 
-              <!-- ── Orbit Arms ── -->
-              <!-- Arm 1 – Birthday Cakes (12 o'clock) -->
-              <div class="orbit-arm" style="animation-delay:0s">
-                <div class="orbit-content" style="animation-delay:0s">
-                  <div class="glass rounded-2xl p-3 flex items-center gap-2.5 shadow-xl orbit-card-hover" style="width:152px">
-                    <div class="w-9 h-9 rounded-xl gradient-purple flex items-center justify-center shrink-0 shadow-sm">
-                      <CakeIcon class="w-4.5 h-4.5 text-white" />
-                    </div>
-                    <div class="min-w-0">
-                      <p class="text-xs font-bold text-charcoal leading-tight">Birthday Cakes</p>
-                      <p class="text-xs text-primary font-semibold">from ৳750</p>
-                    </div>
+              <!-- ── Card 2 — right column, top, +5° tilt ── -->
+              <div class="float-wrap absolute z-10" style="top:18px; right:5px; --float-dur:5.2s; --float-delay:0.7s">
+                <Link v-if="heroProducts?.[1]"
+                  :href="route('shop.show', heroProducts[1].slug)"
+                  class="food-img-card hero-fade-up block"
+                  style="width:192px; height:175px; transform:rotate(5deg); animation-delay:0.75s">
+                  <img :src="heroProducts[1].featured_image_url" :alt="heroProducts[1].name" class="w-full h-full object-cover">
+                  <div class="food-img-label">
+                    <p class="text-white/65 text-[9px] mb-0.5">{{ heroProducts[1].category?.name }}</p>
+                    <p class="text-white text-[11px] font-bold leading-tight line-clamp-1">{{ heroProducts[1].name }}</p>
+                    <p class="text-white/90 text-[10px] font-semibold mt-0.5">৳{{ heroProducts[1].final_price }}</p>
+                  </div>
+                </Link>
+              </div>
+
+              <!-- ── Card 3 — right column, bottom, -2° tilt ── -->
+              <!-- top:225px keeps a 32px gap below Card 2 (18+175+32=225), safe even with ±12px float -->
+              <div class="float-wrap absolute z-10" style="top:225px; right:5px; --float-dur:5.8s; --float-delay:1.4s">
+                <Link v-if="heroProducts?.[2]"
+                  :href="route('shop.show', heroProducts[2].slug)"
+                  class="food-img-card hero-fade-up block"
+                  style="width:192px; height:175px; transform:rotate(-2deg); animation-delay:0.9s">
+                  <img :src="heroProducts[2].featured_image_url" :alt="heroProducts[2].name" class="w-full h-full object-cover">
+                  <div class="food-img-label">
+                    <p class="text-white/65 text-[9px] mb-0.5">{{ heroProducts[2].category?.name }}</p>
+                    <p class="text-white text-[11px] font-bold leading-tight line-clamp-1">{{ heroProducts[2].name }}</p>
+                    <p class="text-white/90 text-[10px] font-semibold mt-0.5">৳{{ heroProducts[2].final_price }}</p>
+                  </div>
+                </Link>
+              </div>
+
+              <!-- ── Trending pill — above Card 1 ── -->
+              <div class="float-wrap absolute z-30" style="top:8px; left:5px; --float-dur:4s; --float-delay:0.3s">
+                <div class="app-card-pill flex items-center gap-2 whitespace-nowrap hero-fade-up" style="animation-delay:0.5s">
+                  <span class="text-sm leading-none">🔥</span>
+                  <div>
+                    <p class="text-white text-[11px] font-bold leading-tight">Trending Now</p>
+                    <p class="text-white/50 text-[9px]">Fresh from the oven</p>
+                  </div>
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse ml-1 shrink-0"></span>
+                </div>
+              </div>
+
+              <!-- ── Orders stat — bottom left, below all cards ── -->
+              <!-- Card 1 bottom: 52+298=350px. Stat top ≈ 440px. Clear. -->
+              <div class="float-wrap absolute z-30" style="bottom:14px; left:5px; --float-dur:5.5s; --float-delay:0.6s">
+                <div class="app-card-sm flex items-center gap-2.5 hero-fade-up" style="animation-delay:1.05s">
+                  <div class="w-9 h-9 rounded-xl bg-emerald-500/20 flex items-center justify-center shrink-0">
+                    <CheckCircleIcon class="w-4 h-4 text-emerald-400" />
+                  </div>
+                  <div>
+                    <p class="text-white font-bold text-sm leading-tight">{{ ordersCount }}+</p>
+                    <p class="text-white/50 text-[10px]">Orders Today</p>
                   </div>
                 </div>
               </div>
 
-              <!-- Arm 2 – Fresh Pastries (3 o'clock) -->
-              <div class="orbit-arm" style="animation-delay:-4s">
-                <div class="orbit-content" style="animation-delay:-4s">
-                  <div class="glass rounded-2xl p-3 flex items-center gap-2.5 shadow-xl orbit-card-hover" style="width:152px">
-                    <div class="w-9 h-9 rounded-xl bg-amber-100 flex items-center justify-center shrink-0">
-                      <SparklesIcon class="w-4.5 h-4.5 text-amber-500" />
-                    </div>
-                    <div class="min-w-0">
-                      <p class="text-xs font-bold text-charcoal leading-tight">Fresh Pastries</p>
-                      <p class="text-xs text-primary font-semibold">from ৳45</p>
-                    </div>
+              <!-- ── Rating stat — bottom right, below Card 3 ── -->
+              <!-- Card 3 bottom: 225+175=400px. Stat top ≈ 440px. Clear. -->
+              <div class="float-wrap absolute z-30" style="bottom:14px; right:5px; --float-dur:5s; --float-delay:1.2s">
+                <div class="app-card-sm flex items-center gap-2.5 hero-fade-up" style="animation-delay:1.15s">
+                  <div class="w-9 h-9 rounded-xl bg-amber-400/15 flex items-center justify-center shrink-0">
+                    <StarIcon class="w-4 h-4 text-amber-400" style="fill:rgba(251,191,36,0.4)" />
+                  </div>
+                  <div>
+                    <p class="text-white font-bold text-sm leading-tight">4.9 ★</p>
+                    <p class="text-white/50 text-[10px]">5k+ Reviews</p>
                   </div>
                 </div>
               </div>
 
-              <!-- Arm 3 – Daily Orders (6 o'clock) -->
-              <div class="orbit-arm" style="animation-delay:-8s">
-                <div class="orbit-content" style="animation-delay:-8s">
-                  <div class="glass rounded-2xl px-4 py-3 shadow-xl text-center orbit-card-hover" style="width:112px">
-                    <div class="w-9 h-9 rounded-xl bg-emerald-50 flex items-center justify-center mx-auto mb-1.5">
-                      <CheckCircleIcon class="w-4.5 h-4.5 text-emerald-600" />
-                    </div>
-                    <p class="text-xl font-bold text-charcoal leading-none">{{ ordersCount }}+</p>
-                    <p class="text-[11px] text-muted mt-0.5">Daily Orders</p>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Arm 4 – Happy Customers (9 o'clock) -->
-              <div class="orbit-arm" style="animation-delay:-12s">
-                <div class="orbit-content" style="animation-delay:-12s">
-                  <div class="glass rounded-2xl p-3 flex items-center gap-2.5 shadow-xl orbit-card-hover" style="width:152px">
-                    <div class="w-9 h-9 rounded-xl bg-rose-50 flex items-center justify-center shrink-0">
-                      <HeartIcon class="w-4.5 h-4.5 text-rose-500" />
-                    </div>
-                    <div class="min-w-0">
-                      <p class="text-xs font-bold text-charcoal leading-tight">Happy Customers</p>
-                      <p class="text-xs text-primary font-semibold">Since 2020</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Scattered sparkle dots -->
+              <!-- Sparkle dots -->
               <div v-for="s in sparkles" :key="s.id" class="sparkle-dot absolute rounded-full bg-white" :style="s.style"></div>
 
             </div>
+          </div>
+
+          <!-- ── Mobile / Tablet: Hero product cards ── -->
+          <div class="lg:hidden mt-8 hero-fade-up" style="animation-delay:0.9s">
+
+            <!-- Mobile (<md): horizontal snap scroll, ~72vw cards so next card peeks -->
+            <div v-if="heroProducts?.length" class="md:hidden">
+              <div class="flex gap-4 overflow-x-auto pb-3 snap-x snap-mandatory scrollbar-none -mx-4 px-4">
+                <Link
+                  v-for="(product, i) in heroProducts"
+                  :key="product.id"
+                  :href="route('shop.show', product.slug)"
+                  class="shrink-0 snap-start food-img-card"
+                  style="width:72vw; height:52vw; max-width:280px; max-height:210px;"
+                >
+                  <img :src="product.featured_image_url" :alt="product.name" class="w-full h-full object-cover">
+                  <div class="food-img-label">
+                    <p class="text-white/70 text-[10px] mb-0.5">{{ product.category?.name }}</p>
+                    <p class="text-white text-xs font-bold leading-tight line-clamp-1">{{ product.name }}</p>
+                    <p class="text-white/90 text-[11px] font-semibold mt-1">৳{{ product.final_price }}</p>
+                  </div>
+                </Link>
+              </div>
+              <div class="flex justify-center gap-1.5 mt-3">
+                <span v-for="(p, i) in heroProducts" :key="i" class="w-1.5 h-1.5 rounded-full bg-white/30"></span>
+              </div>
+            </div>
+
+            <!-- Tablet (md–lg): equal 3-column grid -->
+            <div v-if="heroProducts?.length" class="hidden md:grid grid-cols-3 gap-4">
+              <Link
+                v-for="(product, i) in heroProducts"
+                :key="product.id"
+                :href="route('shop.show', product.slug)"
+                class="food-img-card"
+                style="height:220px;"
+              >
+                <img :src="product.featured_image_url" :alt="product.name" class="w-full h-full object-cover">
+                <div class="food-img-label">
+                  <p class="text-white/70 text-[10px] mb-0.5">{{ product.category?.name }}</p>
+                  <p class="text-white text-xs font-bold leading-tight line-clamp-1">{{ product.name }}</p>
+                  <p class="text-white/90 text-[11px] font-semibold mt-1">৳{{ product.final_price }}</p>
+                </div>
+              </Link>
+            </div>
+
+            <!-- Stats row: Orders + Rating (mobile and tablet) -->
+            <div class="flex items-center justify-center gap-4 mt-5">
+              <div class="app-card-sm flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-xl bg-emerald-500/20 flex items-center justify-center shrink-0">
+                  <CheckCircleIcon class="w-4 h-4 text-emerald-400" />
+                </div>
+                <div>
+                  <p class="text-white font-bold text-sm leading-tight">{{ ordersCount }}+</p>
+                  <p class="text-white/50 text-[10px]">Orders Today</p>
+                </div>
+              </div>
+              <div class="app-card-sm flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-xl bg-amber-400/15 flex items-center justify-center shrink-0">
+                  <StarIcon class="w-4 h-4 text-amber-400" style="fill:rgba(251,191,36,0.4)" />
+                </div>
+                <div>
+                  <p class="text-white font-bold text-sm leading-tight">4.9 ★</p>
+                  <p class="text-white/50 text-[10px]">5k+ Reviews</p>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
       </div>
@@ -462,9 +524,10 @@ import {
 
 // ── Props ──
 const props = defineProps({
+  heroProducts:     Array,
   featuredProducts: Array,
-  categories: Array,
-  popularProducts: Array,
+  categories:       Array,
+  popularProducts:  Array,
 })
 
 // ── Hero: Mouse parallax ──
@@ -598,53 +661,55 @@ const contactInfo = [
 <style scoped>
 @reference "../../css/app.css";
 
-/* ── Banner image slider ── */
-/* Default: hidden with no transition (instant disappear after prev is done) */
-.banner-slide {
-  opacity: 0;
-  z-index: 0;
-}
-/* Old slide stays fully opaque underneath while new slides in on top */
-.banner-slide.prev {
-  opacity: 1;
-  z-index: 1;
-}
-/* New slide fades in on top of the prev — one image is ALWAYS fully opaque */
-.banner-slide.active {
-  opacity: 1;
-  z-index: 2;
-  transition: opacity 2s ease-in-out;
-}
-
-/* Ken Burns zoom — each image slowly grows */
-.banner-img {
-  animation: banner-zoom 14s ease-in-out infinite alternate;
-  will-change: transform;
-}
-@keyframes banner-zoom {
-  from { transform: scale(1.0); }
-  to   { transform: scale(1.10); }
-}
-
-/* Top-to-bottom overlay: fully transparent at top so logo/text are clear,
-   deepens toward the bottom for cinematic depth */
-.banner-overlay {
-  background: linear-gradient(
-    to bottom,
-    transparent                  0%,
-    rgba(55,  8, 90,  0.15)     30%,
-    rgba(45,  6, 78,  0.40)     65%,
-    rgba(20,  4, 45,  0.65)    100%
+/* ── Hero section solid background ── */
+.hero-section-bg {
+  background: linear-gradient(135deg,
+    #080115  0%,
+    #110228  35%,
+    #1c0440  65%,
+    #0e0222  100%
   );
 }
 
-/* Hero text contrast — shadow lifts copy off the image on every slide */
-.hero-heading {
-  text-shadow: 0 2px 16px rgba(0,0,0,0.55), 0 1px 4px rgba(0,0,0,0.35);
+/* ── Food image cards (foreground collage) ── */
+.food-img-card {
+  position: relative;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow:
+    0 28px 70px rgba(0, 0, 0, 0.60),
+    0 8px 24px  rgba(0, 0, 0, 0.40),
+    0 0 0 1px   rgba(255, 255, 255, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
-.hero-body {
-  text-shadow: 0 1px 10px rgba(0,0,0,0.50);
+.food-img-card:hover {
+  box-shadow:
+    0 36px 80px rgba(0, 0, 0, 0.65),
+    0 12px 32px rgba(0, 0, 0, 0.45),
+    0 0 0 1px   rgba(255, 255, 255, 0.12);
 }
+
+/* Label strip at the bottom of each image card */
+.food-img-label {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 28px 12px 10px;
+  background: linear-gradient(to top, rgba(0,0,0,0.78) 0%, transparent 100%);
+}
+
+/* Empty placeholder card */
+.food-img-card--placeholder {
+  background: rgba(255,255,255,0.05);
+  display: flex;
+  align-items: flex-end;
+  border: 1px dashed rgba(255,255,255,0.15);
+}
+
+/* Hide scrollbar on mobile card strip */
+.scrollbar-none { scrollbar-width: none; }
+.scrollbar-none::-webkit-scrollbar { display: none; }
 
 /* ── Dot Grid ── */
 .dot-grid {
@@ -720,56 +785,50 @@ const contactInfo = [
 }
 .btn-hero-ghost:active { transform: scale(0.97); }
 
-/* ── Outer pulse ring ── */
-.outer-pulse {
-  animation: outer-ring-pulse 5s ease-in-out infinite;
-}
-@keyframes outer-ring-pulse {
-  0%, 100% { transform: scale(1);    opacity: 0.3; }
-  50%       { transform: scale(1.04); opacity: 0.12; }
+
+/* ── Floating App UI Cards ── */
+.app-card {
+  background: rgba(255, 255, 255, 0.10);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.20);
+  border-radius: 20px;
+  padding: 14px;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.40),
+    0 2px 8px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
-/* ── Inner reverse spin ── */
-.spin-slow-reverse {
-  animation: reverse-spin 22s linear infinite;
-}
-@keyframes reverse-spin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(-360deg); }
-}
-
-/* ── Orbit arms + counter-rotating content ── */
-.orbit-arm {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  animation: orbit-spin 16s linear infinite;
-}
-@keyframes orbit-spin {
-  from { transform: rotate(0deg);   }
-  to   { transform: rotate(360deg); }
+.app-card-sm {
+  background: rgba(255, 255, 255, 0.10);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 16px;
+  padding: 10px 14px;
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
-.orbit-content {
-  position: absolute;
-  top: -188px;
-  left: 0;
-  transform: translateX(-50%);
-  animation: orbit-counter 16s linear infinite;
-}
-@keyframes orbit-counter {
-  from { transform: translateX(-50%) rotate(0deg);    }
-  to   { transform: translateX(-50%) rotate(-360deg); }
+.app-card-pill {
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.20);
+  border-radius: 9999px;
+  padding: 10px 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
 }
 
-.orbit-card-hover {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+/* Float wrapper — handles vertical bob; inner div handles rotation independently */
+.float-wrap {
+  animation: float-bob var(--float-dur, 4s) ease-in-out var(--float-delay, 0s) infinite;
 }
-.orbit-card-hover:hover {
-  transform: scale(1.06);
-  box-shadow: 0 12px 32px rgba(111, 44, 145, 0.2);
+@keyframes float-bob {
+  0%, 100% { transform: translateY(0px);   }
+  50%       { transform: translateY(-12px); }
 }
 
 /* ── Sparkle dots ── */
