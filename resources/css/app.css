@@ -60,12 +60,12 @@
 @layer components {
     .btn-primary {
         @apply inline-flex items-center justify-center px-6 py-3 rounded-full font-semibold text-white transition-all duration-300;
-        background: linear-gradient(135deg, #6F2C91, #3B145A);
-        box-shadow: 0 4px 15px rgba(111, 44, 145, 0.3);
+        background: linear-gradient(135deg, #8B40B5, #6F2C91);
+        box-shadow: 0 4px 15px rgba(111, 44, 145, 0.25);
     }
     .btn-primary:hover {
-        background: linear-gradient(135deg, #5A2278, #2A0D42);
-        box-shadow: 0 6px 20px rgba(111, 44, 145, 0.45);
+        background: linear-gradient(135deg, #7835A3, #5A2278);
+        box-shadow: 0 6px 20px rgba(111, 44, 145, 0.38);
         transform: translateY(-1px);
     }
     .btn-primary:active {
@@ -102,7 +102,7 @@
     }
 
     .gradient-purple {
-        background: linear-gradient(135deg, #6F2C91 0%, #3B145A 100%);
+        background: linear-gradient(135deg, #8B40B5 0%, #6F2C91 100%);
     }
 
     .gradient-soft {
@@ -174,6 +174,8 @@
         to { opacity: 1; transform: translateY(0); }
     }
 
+    .fill-warning { fill: var(--color-warning); }
+
     .scrollbar-hide::-webkit-scrollbar {
         display: none;
     }
@@ -181,6 +183,39 @@
         -ms-overflow-style: none;
         scrollbar-width: none;
     }
+}
+
+/* ── Toast notifications ── */
+.Vue-Toastification__toast {
+  border-radius: 16px !important;
+  padding: 14px 18px !important;
+  font-family: 'Poppins', sans-serif !important;
+  font-size: 0.8125rem !important;
+  font-weight: 500 !important;
+  color: #fff !important;
+  background: #6F2C91 !important;
+  border: none !important;
+  box-shadow: 0 8px 28px rgba(111, 44, 145, 0.35), 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+  min-width: 240px !important;
+  max-width: 320px !important;
+}
+.Vue-Toastification__toast--error   { background: #D64545 !important; box-shadow: 0 8px 28px rgba(214, 69, 69, 0.35), 0 2px 8px rgba(0,0,0,0.1) !important; }
+.Vue-Toastification__toast--warning { background: #F2A93B !important; box-shadow: 0 8px 28px rgba(242, 169, 59, 0.35), 0 2px 8px rgba(0,0,0,0.1) !important; }
+.Vue-Toastification__icon           { color: rgba(255, 255, 255, 0.9) !important; margin-right: 10px !important; }
+.Vue-Toastification__progress-bar   { background: rgba(255, 255, 255, 0.30) !important; height: 2px !important; }
+.Vue-Toastification__close-button       { color: rgba(255, 255, 255, 0.55) !important; }
+.Vue-Toastification__close-button:hover { color: #fff !important; }
+@media (max-width: 480px) {
+  .Vue-Toastification__container {
+    left: 0.75rem !important;
+    right: 0.75rem !important;
+    bottom: 0.75rem !important;
+  }
+  .Vue-Toastification__toast {
+    min-width: unset !important;
+    max-width: unset !important;
+    width: 100% !important;
+  }
 }
 
 /* Swiper custom styles */

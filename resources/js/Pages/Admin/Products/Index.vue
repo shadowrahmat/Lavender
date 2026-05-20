@@ -176,7 +176,7 @@
               </div>
 
               <!-- Toggles -->
-              <div class="flex gap-6">
+              <div class="flex flex-wrap gap-x-6 gap-y-3">
                 <label class="flex items-center gap-2.5 cursor-pointer">
                   <input v-model="editForm.is_active" type="checkbox" class="rounded text-primary w-4 h-4">
                   <span class="text-sm font-medium text-charcoal">Active</span>
@@ -184,6 +184,13 @@
                 <label class="flex items-center gap-2.5 cursor-pointer">
                   <input v-model="editForm.is_featured" type="checkbox" class="rounded text-primary w-4 h-4">
                   <span class="text-sm font-medium text-charcoal">Featured</span>
+                </label>
+                <label class="flex items-center gap-2.5 cursor-pointer">
+                  <input v-model="editForm.show_on_hero" type="checkbox" class="rounded text-primary w-4 h-4">
+                  <div>
+                    <p class="text-sm font-medium text-charcoal leading-tight">Show on Hero</p>
+                    <p class="text-xs text-muted">Homepage banner (max 3)</p>
+                  </div>
                 </label>
               </div>
 
@@ -237,7 +244,7 @@ const imgInput      = ref(null)
 const editForm = ref({
   id: null, name: '', category_id: '', short_description: '',
   description: '', ingredients: '', price: '', discount_price: '',
-  weight: '', stock: 0, is_active: true, is_featured: false,
+  weight: '', stock: 0, is_active: true, is_featured: false, show_on_hero: false,
   featured_image_url: '', featured_image: null,
 })
 
@@ -257,6 +264,7 @@ const openEdit = (product) => {
     stock:             product.stock,
     is_active:         product.is_active,
     is_featured:       product.is_featured,
+    show_on_hero:      product.show_on_hero,
     featured_image_url: product.featured_image_url,
     featured_image:    null,
   }
@@ -292,8 +300,9 @@ const submitEdit = () => {
   fd.append('discount_price',    editForm.value.discount_price || '')
   fd.append('weight',            editForm.value.weight || '')
   fd.append('stock',             editForm.value.stock)
-  fd.append('is_active',         editForm.value.is_active ? 1 : 0)
+  fd.append('is_active',         editForm.value.is_active   ? 1 : 0)
   fd.append('is_featured',       editForm.value.is_featured ? 1 : 0)
+  fd.append('show_on_hero',      editForm.value.show_on_hero ? 1 : 0)
   if (editForm.value.featured_image) {
     fd.append('featured_image', editForm.value.featured_image)
   }

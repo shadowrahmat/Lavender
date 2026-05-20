@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir \"e:\\\\Lavender\\\\storage\\\\app\\\\public\" /b /s)",
+      "Bash(findstr /i \"\\\\.jpg\\\\|\\\\.png\\\\|\\\\.jpeg\\\\|\\\\.webp\")",
+      "Bash(dir \"e:\\\\Lavender\\\\public\" /b /s)",
+      "PowerShell(New-Item -ItemType Directory -Force -Path \"e:\\\\Lavender\\\\public\\\\banner\")",
+      "PowerShell(Copy-Item \"e:\\\\Lavender\\\\public\\\\storage\\\\products\\\\8rb2VZb0BRCrpjFiNBBCVR55pPq7ADvZGCNYL7n9.jpg\" \"e:\\\\Lavender\\\\public\\\\banner\\\\banner1.jpg\")",
+      "PowerShell(Copy-Item \"e:\\\\Lavender\\\\public\\\\storage\\\\products\\\\mXoP8LIKjrQHk2HOfsXii10EF0PNQ40RifwZLg4v.jpg\" \"e:\\\\Lavender\\\\public\\\\banner\\\\banner2.jpg\")",
+      "PowerShell(Copy-Item \"e:\\\\Lavender\\\\public\\\\storage\\\\products\\\\VkzkHn8EiTar8GkOo2T15iOjBXfbFLfZOzPZnB5d.jpg\" \"e:\\\\Lavender\\\\public\\\\banner\\\\banner3.jpg\")",
+      "PowerShell(Copy-Item \"e:\\\\Lavender\\\\public\\\\storage\\\\products\\\\8rb2VZb0BRCrpjFiNBBCVR55pPq7ADvZGCNYL7n9.jpg\" \"e:\\\\Lavender\\\\public\\\\banner\\\\banner4.jpg\")",
+      "Bash(cd /d \"e:\\\\Lavender\")",
+      "Bash(npx vite *)",
+      "PowerShell(Invoke-WebRequest -Uri \"http://127.0.0.1:8000/banner/Cake-scaled1.webp\" -Method Head -TimeoutSec 5 2>&1)",
+      "Bash(ipconfig)",
+      "Bash(findstr /i \"IPv4\")",
+      "Bash(powershell -Command \"\\(Get-Content 'e:\\\\Lavender\\\\.env'\\) -replace 'APP_URL=http://localhost:8000', 'APP_URL=http://172.17.20.101:8000' | Set-Content 'e:\\\\Lavender\\\\.env'\")",
+      "Bash(Select-String -Pattern \"IPv4|Wireless|Wi-Fi|Ethernet|adapter\")",
+      "PowerShell(\\(Get-Content 'e:\\\\Lavender\\\\.env'\\) -replace 'APP_URL=http://172.17.20.101:8000', 'APP_URL=http://localhost:8000' | Set-Content 'e:\\\\Lavender\\\\.env')",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:8000)",
+      "PowerShell(Get-Process -Id 41308, 7060, 9808 -ErrorAction SilentlyContinue)",
+      "PowerShell(Stop-Process -Force)",
+      "Bash(curl -v http://localhost:8000)"
+    ]
+  }
+}

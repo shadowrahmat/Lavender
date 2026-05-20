@@ -29,20 +29,20 @@ createInertiaApp({
             .use(pinia)
             .use(ZiggyVue)
             .use(Toast, {
-                position: 'top-right',
-                timeout: 3000,
+                position: 'bottom-right',
+                timeout: 2500,
                 closeOnClick: true,
-                pauseOnFocusLoss: true,
+                pauseOnFocusLoss: false,
                 pauseOnHover: true,
-                draggable: true,
-                draggablePercent: 0.6,
+                draggable: false,
                 showCloseButtonOnHover: false,
                 hideProgressBar: false,
-                closeButton: 'button',
+                closeButton: false,
                 icon: true,
                 rtl: false,
-                maxToasts: 5,
+                maxToasts: 4,
                 newestOnTop: true,
+                transition: 'Vue-Toastification__fade',
             })
             .mount(el);
     },

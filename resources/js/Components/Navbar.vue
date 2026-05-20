@@ -1,7 +1,7 @@
 <template>
   <nav
     class="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
-    :class="scrolled ? 'bg-white/95 backdrop-blur-md shadow-sm border-b border-purple-100/80' : 'bg-transparent'"
+    :class="isHeroMode ? 'bg-transparent hero-nav' : 'bg-white shadow-sm border-b border-purple-100/50'"
   >
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-16 md:h-20">
@@ -11,7 +11,8 @@
           <img
             src="/images/Lavender-Logo.png"
             alt="Lavender Food & Bakery"
-            class="h-10 md:h-12 w-auto object-contain transition-transform duration-300 group-hover:scale-[1.03]"
+            class="h-10 md:h-12 w-auto object-contain transition-all duration-300 group-hover:scale-[1.03]"
+            :class="isHeroMode ? 'brightness-0 invert' : ''"
           >
         </Link>
 
@@ -27,9 +28,9 @@
         <!-- Right Actions -->
         <div class="flex items-center gap-1">
 
-          <!-- Search -->
-          <button @click="searchOpen = !searchOpen"
-            class="icon-btn" :class="searchOpen ? 'text-primary bg-purple-50' : ''">
+          <!-- Search Toggle -->
+          <button @click="toggleSearch"
+            class="icon-btn" :class="searchOpen ? 'text-primary bg-purple-100/70' : ''">
             <MagnifyingGlassIcon class="w-5 h-5" />
           </button>
 
@@ -52,16 +53,16 @@
             </span>
           </button>
 
-          <!-- User Menu (authenticated) -->
-          <div class="relative" v-if="auth?.user">
+          <!-- User Menu -->
+          <div class="relative" v-if="auth?.user" ref="userMenuRef">
             <button @click="userMenuOpen = !userMenuOpen"
               class="flex items-center gap-1.5 px-1.5 py-1 rounded-xl hover:bg-purple-50 transition-all duration-200 ml-1">
               <div class="w-8 h-8 rounded-full gradient-purple flex items-center justify-center text-white text-sm font-semibold shadow-sm">
                 {{ auth.user.name[0].toUpperCase() }}
               </div>
               <ChevronDownIcon
-                class="w-3.5 h-3.5 text-muted hidden md:block transition-transform duration-200"
-                :class="userMenuOpen ? 'rotate-180' : ''" />
+                class="w-3.5 h-3.5 hidden md:block transition-all duration-200"
+                :class="[userMenuOpen ? 'rotate-180' : '', isHeroMode ? 'text-white/70' : 'text-muted']" />
             </button>
             <transition name="dropdown">
               <div v-if="userMenuOpen"
@@ -108,17 +109,82 @@
         </div>
       </div>
 
-      <!-- Search Bar -->
+      <!-- ── Search Bar ── right-aligned below nav row -->
       <transition name="slide-down">
-        <div v-if="searchOpen" class="pb-4">
-          <form @submit.prevent="submitSearch" class="flex gap-2">
-            <div class="relative flex-1">
-              <MagnifyingGlassIcon class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted pointer-events-none" />
-              <input v-model="searchQuery" type="text" placeholder="Search cakes, bread, sweets..."
-                class="input-field pl-10 w-full" autofocus>
+        <div v-if="searchOpen" class="pb-3.5 pt-0.5">
+          <div class="flex sm:justify-end">
+            <div class="relative w-full sm:w-80 md:w-96" ref="searchContainer">
+
+              <!-- Input -->
+              <div class="relative flex items-center">
+                <MagnifyingGlassIcon class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted pointer-events-none z-10" />
+                <input
+                  v-model="searchQuery"
+                  @input="onSearchInput"
+                  @keydown.enter.prevent="submitSearch"
+                  @keydown.escape="closeSearch"
+                  type="text"
+                  placeholder="Search products…"
+                  autocomplete="off"
+                  autofocus
+                  class="search-input"
+                >
+                <!-- Spinner -->
+                <div v-if="searchLoading" class="absolute right-3.5 top-1/2 -translate-y-1/2">
+                  <div class="w-3.5 h-3.5 border-2 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+                </div>
+                <!-- Clear button -->
+                <button v-else-if="searchQuery" @click="clearSearch"
+                  class="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted/60 hover:text-muted transition-colors p-0.5 rounded">
+                  <XMarkIcon class="w-3.5 h-3.5" />
+                </button>
+              </div>
+
+              <!-- Results dropdown -->
+              <transition name="dropdown">
+                <div v-if="showResults"
+                  class="absolute top-full mt-2 left-0 right-0 bg-white rounded-2xl shadow-xl border border-purple-100/60 overflow-hidden z-50">
+
+                  <template v-if="searchResults.length > 0">
+                    <Link
+                      v-for="product in searchResults" :key="product.id"
+                      :href="route('shop.show', product.slug)"
+                      @click="closeSearch"
+                      class="flex items-center gap-3 px-4 py-3 hover:bg-purple-50/60 transition-colors group">
+                      <img :src="product.featured_image_url" :alt="product.name"
+                        class="w-10 h-10 object-cover rounded-xl bg-purple-50 shrink-0">
+                      <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-charcoal truncate group-hover:text-primary transition-colors">
+                          {{ product.name }}
+                        </p>
+                        <p class="text-xs text-muted">{{ product.category }}</p>
+                      </div>
+                      <p class="text-sm font-semibold text-primary shrink-0">
+                        ৳{{ Number(product.final_price).toFixed(0) }}
+                      </p>
+                    </Link>
+
+                    <!-- See all -->
+                    <div class="border-t border-purple-50">
+                      <button @click="submitSearch"
+                        class="flex items-center justify-center gap-1.5 w-full px-4 py-2.5 text-xs text-primary font-medium hover:bg-purple-50/50 transition-colors">
+                        <MagnifyingGlassIcon class="w-3.5 h-3.5" />
+                        See all results for "{{ searchQuery }}"
+                      </button>
+                    </div>
+                  </template>
+
+                  <!-- No results -->
+                  <div v-else-if="!searchLoading" class="px-4 py-5 text-center">
+                    <p class="text-sm text-muted">
+                      No products found for "<span class="text-charcoal font-medium">{{ searchQuery }}</span>"
+                    </p>
+                  </div>
+                </div>
+              </transition>
+
             </div>
-            <button type="submit" class="btn-primary px-6">Search</button>
-          </form>
+          </div>
         </div>
       </transition>
 
@@ -158,8 +224,9 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { Link, usePage, router } from '@inertiajs/vue3'
+import axios from 'axios'
 import {
   MagnifyingGlassIcon,
   HeartIcon,
@@ -179,39 +246,106 @@ import {
   ArrowRightOnRectangleIcon,
 } from '@heroicons/vue/24/outline'
 
-const page = usePage()
-const auth = page.props.auth
-const cart_count = page.props.cart_count
+const page          = usePage()
+const auth          = page.props.auth
+const cart_count    = page.props.cart_count
 const wishlist_count = page.props.wishlist_count
 
-const scrolled = ref(false)
-const searchOpen = ref(false)
-const mobileMenuOpen = ref(false)
-const userMenuOpen = ref(false)
-const searchQuery = ref('')
+const scrolled        = ref(false)
+const isHomePage      = computed(() => route().current('home'))
+const isHeroMode      = computed(() => isHomePage.value && !scrolled.value)
+const searchOpen      = ref(false)
+const mobileMenuOpen  = ref(false)
+const userMenuOpen    = ref(false)
+const userMenuRef     = ref(null)
+const searchContainer = ref(null)
+
+const searchQuery   = ref('')
+const searchResults = ref([])
+const searchLoading = ref(false)
+const showResults   = ref(false)
+let debounceTimer   = null
 
 const handleScroll = () => { scrolled.value = window.scrollY > 20 }
-onMounted(() => window.addEventListener('scroll', handleScroll))
-onUnmounted(() => window.removeEventListener('scroll', handleScroll))
 
 const isActive = (name) => {
-  return route().current(name + '*') ? 'text-primary font-semibold' : 'text-charcoal'
+  const active = route().current(name + '*')
+  if (isHeroMode.value) {
+    return active ? 'text-white font-semibold' : 'text-white/80'
+  }
+  return active ? 'text-primary font-semibold' : 'text-charcoal'
 }
 
 const openCart = () => { window.dispatchEvent(new Event('open-cart')) }
 
+const toggleSearch = () => {
+  searchOpen.value = !searchOpen.value
+  if (!searchOpen.value) clearSearch()
+}
+
+const onSearchInput = () => {
+  clearTimeout(debounceTimer)
+  const q = searchQuery.value.trim()
+
+  if (q.length < 2) {
+    searchResults.value = []
+    showResults.value   = false
+    searchLoading.value = false
+    return
+  }
+
+  searchLoading.value = true
+  showResults.value   = true
+
+  debounceTimer = setTimeout(async () => {
+    try {
+      const { data } = await axios.get(route('search'), { params: { q } })
+      searchResults.value = data
+    } catch {
+      searchResults.value = []
+    } finally {
+      searchLoading.value = false
+    }
+  }, 280)
+}
+
+const clearSearch = () => {
+  searchQuery.value   = ''
+  searchResults.value = []
+  showResults.value   = false
+  clearTimeout(debounceTimer)
+}
+
+const closeSearch = () => {
+  searchOpen.value = false
+  clearSearch()
+}
+
 const submitSearch = () => {
   if (searchQuery.value.trim()) {
     router.get(route('shop.index'), { search: searchQuery.value })
-    searchOpen.value = false
+    closeSearch()
   }
 }
 
-const closeMenus = (e) => {
-  if (!e.target.closest('.relative')) userMenuOpen.value = false
+const handleOutsideClick = (e) => {
+  if (userMenuRef.value && !userMenuRef.value.contains(e.target)) {
+    userMenuOpen.value = false
+  }
+  if (searchContainer.value && !searchContainer.value.contains(e.target)) {
+    showResults.value = false
+  }
 }
-onMounted(() => document.addEventListener('click', closeMenus))
-onUnmounted(() => document.removeEventListener('click', closeMenus))
+
+onMounted(() => {
+  window.addEventListener('scroll', handleScroll)
+  document.addEventListener('click', handleOutsideClick)
+})
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll)
+  document.removeEventListener('click', handleOutsideClick)
+  clearTimeout(debounceTimer)
+})
 </script>
 
 <style scoped>
@@ -220,6 +354,18 @@ onUnmounted(() => document.removeEventListener('click', closeMenus))
 .icon-btn {
   @apply p-2.5 rounded-xl hover:bg-purple-50 text-muted hover:text-primary transition-all duration-200;
 }
+
+/* Transparent/hero state overrides */
+.hero-nav .icon-btn {
+  @apply text-white/80 hover:text-white hover:bg-white/10;
+}
+.hero-nav .nav-link {
+  @apply hover:text-white;
+}
+.hero-nav .nav-link::after {
+  @apply bg-white;
+}
+
 .nav-link {
   @apply text-sm font-medium transition-colors hover:text-primary relative;
 }
@@ -237,9 +383,36 @@ onUnmounted(() => document.removeEventListener('click', closeMenus))
   @apply flex items-center gap-3 px-4 py-2 text-sm text-charcoal hover:bg-purple-50 hover:text-primary transition-colors;
 }
 
-.slide-down-enter-active, .slide-down-leave-active { transition: all 0.25s ease; }
-.slide-down-enter-from, .slide-down-leave-to { opacity: 0; transform: translateY(-8px); }
+/* Compact, modern search input */
+.search-input {
+  width: 100%;
+  padding: 0.5rem 2.5rem 0.5rem 2.375rem;
+  border-radius: 12px;
+  border: 1.5px solid #E9D8F4;
+  background: rgba(253, 250, 255, 0.95);
+  font-size: 0.8125rem;
+  color: #1F1B24;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+.search-input::placeholder {
+  color: #9d93a0;
+}
+.search-input:focus {
+  border-color: #6F2C91;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(111, 44, 145, 0.1);
+}
 
-.dropdown-enter-active, .dropdown-leave-active { transition: all 0.2s ease; }
-.dropdown-enter-from, .dropdown-leave-to { opacity: 0; transform: translateY(-6px) scale(0.97); }
+/* Slide-down for search bar and mobile menu */
+.slide-down-enter-active,
+.slide-down-leave-active { transition: all 0.22s ease; }
+.slide-down-enter-from,
+.slide-down-leave-to    { opacity: 0; transform: translateY(-6px); }
+
+/* Dropdown for user menu + results */
+.dropdown-enter-active,
+.dropdown-leave-active { transition: all 0.18s ease; }
+.dropdown-enter-from,
+.dropdown-leave-to    { opacity: 0; transform: translateY(-5px) scale(0.97); }
 </style>
