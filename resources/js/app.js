@@ -29,7 +29,7 @@ createInertiaApp({
             .use(pinia)
             .use(ZiggyVue)
             .use(Toast, {
-                position: 'top-right',
+                position: 'bottom-right',
                 timeout: 3000,
                 closeOnClick: true,
                 pauseOnFocusLoss: true,

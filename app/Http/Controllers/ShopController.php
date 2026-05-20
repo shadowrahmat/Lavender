@@ -61,6 +61,35 @@ class ShopController extends Controller
         ]);
     }
 
+    public function search(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $q = trim($request->get('q', ''));
+
+        if (strlen($q) < 2) {
+            return response()->json([]);
+        }
+
+        $products = Product::with('category')
+            ->where('is_active', true)
+            ->where(function ($query) use ($q) {
+                $query->where('name', 'like', "%{$q}%")
+                      ->orWhere('short_description', 'like', "%{$q}%");
+            })
+            ->take(6)
+            ->get()
+            ->map(fn($p) => [
+                'id'                 => $p->id,
+                'name'               => $p->name,
+                'slug'               => $p->slug,
+                'price'              => $p->price,
+                'final_price'        => $p->final_price,
+                'featured_image_url' => $p->featured_image_url,
+                'category'           => $p->category?->name,
+            ]);
+
+        return response()->json($products);
+    }
+
     public function show(string $slug): Response
     {
         $product = Product::with(['category', 'images', 'reviews.user'])

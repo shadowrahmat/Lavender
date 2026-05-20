@@ -28,7 +28,7 @@
         <div class="flex items-center gap-1">
 
           <!-- Search -->
-          <button @click="searchOpen = !searchOpen"
+          <button @click="toggleSearch"
             class="icon-btn" :class="searchOpen ? 'text-primary bg-purple-50' : ''">
             <MagnifyingGlassIcon class="w-5 h-5" />
           </button>
@@ -53,7 +53,7 @@
           </button>
 
           <!-- User Menu (authenticated) -->
-          <div class="relative" v-if="auth?.user">
+          <div class="relative" v-if="auth?.user" ref="userMenuRef">
             <button @click="userMenuOpen = !userMenuOpen"
               class="flex items-center gap-1.5 px-1.5 py-1 rounded-xl hover:bg-purple-50 transition-all duration-200 ml-1">
               <div class="w-8 h-8 rounded-full gradient-purple flex items-center justify-center text-white text-sm font-semibold shadow-sm">
@@ -110,15 +110,70 @@
 
       <!-- Search Bar -->
       <transition name="slide-down">
-        <div v-if="searchOpen" class="pb-4">
-          <form @submit.prevent="submitSearch" class="flex gap-2">
-            <div class="relative flex-1">
-              <MagnifyingGlassIcon class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted pointer-events-none" />
-              <input v-model="searchQuery" type="text" placeholder="Search cakes, bread, sweets..."
-                class="input-field pl-10 w-full" autofocus>
+        <div v-if="searchOpen" class="pb-4 pt-1">
+          <div class="relative max-w-lg mx-auto" ref="searchContainer">
+
+            <!-- Input row -->
+            <div class="relative flex items-center">
+              <MagnifyingGlassIcon class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted pointer-events-none" />
+              <input
+                v-model="searchQuery"
+                @input="onSearchInput"
+                @keydown.enter.prevent="submitSearch"
+                @keydown.escape="closeSearch"
+                type="text"
+                placeholder="Search cakes, bread, sweets…"
+                autocomplete="off"
+                autofocus
+                class="search-input"
+              >
+              <!-- Spinner -->
+              <div v-if="searchLoading" class="absolute right-3.5 top-1/2 -translate-y-1/2">
+                <div class="w-4 h-4 border-2 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+              </div>
+              <!-- Clear -->
+              <button v-else-if="searchQuery" @click="clearSearch"
+                class="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted hover:text-charcoal transition-colors p-0.5 rounded">
+                <XMarkIcon class="w-3.5 h-3.5" />
+              </button>
             </div>
-            <button type="submit" class="btn-primary px-6">Search</button>
-          </form>
+
+            <!-- Results dropdown -->
+            <transition name="dropdown">
+              <div v-if="showResults"
+                class="absolute top-full mt-2 left-0 right-0 bg-white rounded-2xl shadow-xl border border-purple-100/60 overflow-hidden z-50">
+
+                <template v-if="searchResults.length > 0">
+                  <Link v-for="product in searchResults" :key="product.id"
+                    :href="route('shop.show', product.slug)"
+                    @click="closeSearch"
+                    class="flex items-center gap-3 px-4 py-3 hover:bg-purple-50/60 transition-colors group">
+                    <img :src="product.featured_image_url" :alt="product.name"
+                      class="w-10 h-10 object-cover rounded-xl bg-purple-50 shrink-0">
+                    <div class="flex-1 min-w-0">
+                      <p class="text-sm font-medium text-charcoal truncate group-hover:text-primary transition-colors">{{ product.name }}</p>
+                      <p class="text-xs text-muted">{{ product.category }}</p>
+                    </div>
+                    <p class="text-sm font-semibold text-primary shrink-0">৳{{ Number(product.final_price).toFixed(0) }}</p>
+                  </Link>
+
+                  <!-- See all -->
+                  <div class="border-t border-purple-50 px-4 py-2.5">
+                    <button @click="submitSearch"
+                      class="flex items-center justify-center gap-1.5 w-full text-sm text-primary font-medium hover:opacity-80 transition-opacity">
+                      <MagnifyingGlassIcon class="w-3.5 h-3.5" />
+                      See all results for "{{ searchQuery }}"
+                    </button>
+                  </div>
+                </template>
+
+                <!-- No results -->
+                <div v-else-if="!searchLoading" class="px-4 py-6 text-center">
+                  <p class="text-sm text-muted">No products found for "<span class="text-charcoal font-medium">{{ searchQuery }}</span>"</p>
+                </div>
+              </div>
+            </transition>
+          </div>
         </div>
       </transition>
 
@@ -160,6 +215,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 import { Link, usePage, router } from '@inertiajs/vue3'
+import axios from 'axios'
 import {
   MagnifyingGlassIcon,
   HeartIcon,
@@ -184,15 +240,20 @@ const auth = page.props.auth
 const cart_count = page.props.cart_count
 const wishlist_count = page.props.wishlist_count
 
-const scrolled = ref(false)
-const searchOpen = ref(false)
+const scrolled       = ref(false)
+const searchOpen     = ref(false)
 const mobileMenuOpen = ref(false)
-const userMenuOpen = ref(false)
-const searchQuery = ref('')
+const userMenuOpen   = ref(false)
+const userMenuRef    = ref(null)
+const searchContainer = ref(null)
+
+const searchQuery   = ref('')
+const searchResults = ref([])
+const searchLoading = ref(false)
+const showResults   = ref(false)
+let debounceTimer   = null
 
 const handleScroll = () => { scrolled.value = window.scrollY > 20 }
-onMounted(() => window.addEventListener('scroll', handleScroll))
-onUnmounted(() => window.removeEventListener('scroll', handleScroll))
 
 const isActive = (name) => {
   return route().current(name + '*') ? 'text-primary font-semibold' : 'text-charcoal'
@@ -200,18 +261,74 @@ const isActive = (name) => {
 
 const openCart = () => { window.dispatchEvent(new Event('open-cart')) }
 
+const toggleSearch = () => {
+  searchOpen.value = !searchOpen.value
+  if (!searchOpen.value) clearSearch()
+}
+
+const onSearchInput = () => {
+  clearTimeout(debounceTimer)
+  const q = searchQuery.value.trim()
+
+  if (q.length < 2) {
+    searchResults.value = []
+    showResults.value   = false
+    searchLoading.value = false
+    return
+  }
+
+  searchLoading.value = true
+  showResults.value   = true
+
+  debounceTimer = setTimeout(async () => {
+    try {
+      const { data } = await axios.get(route('search'), { params: { q } })
+      searchResults.value = data
+    } catch {
+      searchResults.value = []
+    } finally {
+      searchLoading.value = false
+    }
+  }, 300)
+}
+
+const clearSearch = () => {
+  searchQuery.value   = ''
+  searchResults.value = []
+  showResults.value   = false
+  clearTimeout(debounceTimer)
+}
+
+const closeSearch = () => {
+  searchOpen.value = false
+  clearSearch()
+}
+
 const submitSearch = () => {
   if (searchQuery.value.trim()) {
     router.get(route('shop.index'), { search: searchQuery.value })
-    searchOpen.value = false
+    closeSearch()
   }
 }
 
-const closeMenus = (e) => {
-  if (!e.target.closest('.relative')) userMenuOpen.value = false
+const handleOutsideClick = (e) => {
+  if (userMenuRef.value && !userMenuRef.value.contains(e.target)) {
+    userMenuOpen.value = false
+  }
+  if (searchContainer.value && !searchContainer.value.contains(e.target)) {
+    showResults.value = false
+  }
 }
-onMounted(() => document.addEventListener('click', closeMenus))
-onUnmounted(() => document.removeEventListener('click', closeMenus))
+
+onMounted(() => {
+  window.addEventListener('scroll', handleScroll)
+  document.addEventListener('click', handleOutsideClick)
+})
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll)
+  document.removeEventListener('click', handleOutsideClick)
+  clearTimeout(debounceTimer)
+})
 </script>
 
 <style scoped>
@@ -235,6 +352,21 @@ onUnmounted(() => document.removeEventListener('click', closeMenus))
 }
 .dropdown-item {
   @apply flex items-center gap-3 px-4 py-2 text-sm text-charcoal hover:bg-purple-50 hover:text-primary transition-colors;
+}
+
+.search-input {
+  @apply w-full pl-10 pr-10 py-2.5 rounded-xl text-sm text-charcoal transition-all duration-200;
+  border: 1.5px solid #E9D8F4;
+  background: #FDFAFF;
+  outline: none;
+}
+.search-input:focus {
+  border-color: #6F2C91;
+  box-shadow: 0 0 0 3px rgba(111, 44, 145, 0.1);
+  background: #fff;
+}
+.search-input::placeholder {
+  color: #9d93a0;
 }
 
 .slide-down-enter-active, .slide-down-leave-active { transition: all 0.25s ease; }

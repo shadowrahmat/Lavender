@@ -30,6 +30,7 @@ Route::get('/terms-conditions', [HomeController::class, 'terms'])->name('terms')
 // Shop routes
 Route::get('/shop', [ShopController::class, 'index'])->name('shop.index');
 Route::get('/shop/{slug}', [ShopController::class, 'show'])->name('shop.show');
+Route::get('/search', [ShopController::class, 'search'])->name('search');
 
 // Cart routes
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
