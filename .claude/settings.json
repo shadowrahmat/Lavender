@@ -11,6 +11,7 @@
       "PowerShell(Copy-Item \"e:\\\\Lavender\\\\public\\\\storage\\\\products\\\\8rb2VZb0BRCrpjFiNBBCVR55pPq7ADvZGCNYL7n9.jpg\" \"e:\\\\Lavender\\\\public\\\\banner\\\\banner4.jpg\")",
       "Bash(cd /d \"e:\\\\Lavender\")",
       "Bash(npx vite *)",
+<<<<<<< HEAD
       "PowerShell(Invoke-WebRequest -Uri \"http://127.0.0.1:8000/banner/Cake-scaled1.webp\" -Method Head -TimeoutSec 5 2>&1)",
       "Bash(ipconfig)",
       "Bash(findstr /i \"IPv4\")",
@@ -21,6 +22,9 @@
       "PowerShell(Get-Process -Id 41308, 7060, 9808 -ErrorAction SilentlyContinue)",
       "PowerShell(Stop-Process -Force)",
       "Bash(curl -v http://localhost:8000)"
+=======
+      "PowerShell(Invoke-WebRequest -Uri \"http://127.0.0.1:8000/banner/Cake-scaled1.webp\" -Method Head -TimeoutSec 5 2>&1)"
+>>>>>>> 02f3ad4a630b4af1e9510b9d9485de822b89099d
     ]
   }
 }
