@@ -626,30 +626,16 @@ const contactInfo = [
   to   { transform: scale(1.10); }
 }
 
-/* Soft purple glassmorphism overlay — images stay visible, text stays readable */
+/* Top-to-bottom overlay: fully transparent at top so logo/text are clear,
+   deepens toward the bottom for cinematic depth */
 .banner-overlay {
-  background:
-    /* User-specified soft purple gradient — the main glassmorphism layer */
-    linear-gradient(
-      135deg,
-      rgba(128,  0, 128, 0.42) 0%,
-      rgba(180, 120, 255, 0.28) 100%
-    ),
-    /* Left-side boost so text column is always readable */
-    linear-gradient(
-      to right,
-      rgba(55,  8, 90,  0.55) 0%,
-      rgba(90, 22, 130, 0.35) 40%,
-      transparent              76%
-    ),
-    /* Top/bottom cinematic depth — subtle, no solid black */
-    linear-gradient(
-      to bottom,
-      rgba(30, 5, 55, 0.25)  0%,
-      transparent             18%,
-      transparent             72%,
-      rgba(20, 4, 45, 0.45)  100%
-    );
+  background: linear-gradient(
+    to bottom,
+    transparent                  0%,
+    rgba(55,  8, 90,  0.15)     30%,
+    rgba(45,  6, 78,  0.40)     65%,
+    rgba(20,  4, 45,  0.65)    100%
+  );
 }
 
 /* Hero text contrast — shadow lifts copy off the image on every slide */
