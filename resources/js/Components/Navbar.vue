@@ -1,7 +1,7 @@
 <template>
   <nav
     class="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
-    :class="scrolled ? 'bg-white shadow-sm border-b border-purple-100/50' : 'bg-transparent hero-nav'"
+    :class="isHeroMode ? 'bg-transparent hero-nav' : 'bg-white shadow-sm border-b border-purple-100/50'"
   >
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-16 md:h-20">
@@ -12,7 +12,7 @@
             src="/images/Lavender-Logo.png"
             alt="Lavender Food & Bakery"
             class="h-10 md:h-12 w-auto object-contain transition-all duration-300 group-hover:scale-[1.03]"
-            :class="scrolled ? '' : 'brightness-0 invert'"
+            :class="isHeroMode ? 'brightness-0 invert' : ''"
           >
         </Link>
 
@@ -62,7 +62,7 @@
               </div>
               <ChevronDownIcon
                 class="w-3.5 h-3.5 hidden md:block transition-all duration-200"
-                :class="[userMenuOpen ? 'rotate-180' : '', scrolled ? 'text-muted' : 'text-white/70']" />
+                :class="[userMenuOpen ? 'rotate-180' : '', isHeroMode ? 'text-white/70' : 'text-muted']" />
             </button>
             <transition name="dropdown">
               <div v-if="userMenuOpen"
@@ -224,7 +224,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { Link, usePage, router } from '@inertiajs/vue3'
 import axios from 'axios'
 import {
@@ -252,6 +252,8 @@ const cart_count    = page.props.cart_count
 const wishlist_count = page.props.wishlist_count
 
 const scrolled        = ref(false)
+const isHomePage      = computed(() => route().current('home'))
+const isHeroMode      = computed(() => isHomePage.value && !scrolled.value)
 const searchOpen      = ref(false)
 const mobileMenuOpen  = ref(false)
 const userMenuOpen    = ref(false)
@@ -268,10 +270,10 @@ const handleScroll = () => { scrolled.value = window.scrollY > 20 }
 
 const isActive = (name) => {
   const active = route().current(name + '*')
-  if (scrolled.value) {
-    return active ? 'text-primary font-semibold' : 'text-charcoal'
+  if (isHeroMode.value) {
+    return active ? 'text-white font-semibold' : 'text-white/80'
   }
-  return active ? 'text-white font-semibold' : 'text-white/80'
+  return active ? 'text-primary font-semibold' : 'text-charcoal'
 }
 
 const openCart = () => { window.dispatchEvent(new Event('open-cart')) }
