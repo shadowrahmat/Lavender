@@ -60,12 +60,12 @@
 @layer components {
     .btn-primary {
         @apply inline-flex items-center justify-center px-6 py-3 rounded-full font-semibold text-white transition-all duration-300;
-        background: linear-gradient(135deg, #6F2C91, #3B145A);
-        box-shadow: 0 4px 15px rgba(111, 44, 145, 0.3);
+        background: linear-gradient(135deg, #8B40B5, #6F2C91);
+        box-shadow: 0 4px 15px rgba(111, 44, 145, 0.25);
     }
     .btn-primary:hover {
-        background: linear-gradient(135deg, #5A2278, #2A0D42);
-        box-shadow: 0 6px 20px rgba(111, 44, 145, 0.45);
+        background: linear-gradient(135deg, #7835A3, #5A2278);
+        box-shadow: 0 6px 20px rgba(111, 44, 145, 0.38);
         transform: translateY(-1px);
     }
     .btn-primary:active {
@@ -102,7 +102,7 @@
     }
 
     .gradient-purple {
-        background: linear-gradient(135deg, #6F2C91 0%, #3B145A 100%);
+        background: linear-gradient(135deg, #8B40B5 0%, #6F2C91 100%);
     }
 
     .gradient-soft {
@@ -173,6 +173,8 @@
         from { opacity: 0; transform: translateY(20px); }
         to { opacity: 1; transform: translateY(0); }
     }
+
+    .fill-warning { fill: var(--color-warning); }
 
     .scrollbar-hide::-webkit-scrollbar {
         display: none;

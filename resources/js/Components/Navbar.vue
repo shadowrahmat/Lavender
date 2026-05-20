@@ -1,7 +1,7 @@
 <template>
   <nav
     class="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
-    :class="scrolled ? 'bg-white/95 backdrop-blur-md shadow-sm border-b border-purple-100/80' : 'bg-transparent'"
+    :class="scrolled ? 'bg-white shadow-sm border-b border-purple-100/50' : 'bg-transparent'"
   >
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-16 md:h-20">

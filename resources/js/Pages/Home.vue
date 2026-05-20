@@ -5,14 +5,28 @@
     <!-- ======= HERO SECTION ======= -->
     <section
       ref="heroRef"
-      class="relative min-h-[85vh] sm:min-h-screen flex items-center overflow-hidden select-none"
+      class="-mt-16 md:-mt-20 relative min-h-[85vh] sm:min-h-screen flex items-center overflow-hidden select-none"
       @mousemove="onMouseMove"
     >
-      <!-- Animated gradient background -->
-      <div class="absolute inset-0 hero-bg"></div>
+      <!-- ── Background image slider ── -->
+      <div class="absolute inset-0 overflow-hidden">
+        <div
+          v-for="(img, i) in bannerImages" :key="i"
+          class="banner-slide absolute inset-0"
+          :class="{ active: i === currentBanner }"
+        >
+          <img :src="img" alt="" class="banner-img w-full h-full object-cover" :style="{ animationDelay: `${i * -3}s` }">
+        </div>
+
+        <!-- Overlay: dark purple gradient for readability + brand feel -->
+        <div class="absolute inset-0 banner-overlay pointer-events-none"></div>
+
+        <!-- Bottom vignette -->
+        <div class="absolute inset-x-0 bottom-0 h-40 bg-linear-to-t from-black/30 to-transparent pointer-events-none"></div>
+      </div>
 
       <!-- Dot grid overlay -->
-      <div class="absolute inset-0 dot-grid pointer-events-none opacity-[0.06]"></div>
+      <div class="absolute inset-0 dot-grid pointer-events-none opacity-[0.045]"></div>
 
       <!-- Parallax blob layer 1 (far) -->
       <div class="absolute inset-0 pointer-events-none" :style="blobStyle(22)">
@@ -465,24 +479,40 @@ const onMouseMove = (e) => {
   mouseY.value = (e.clientY - r.top  - r.height / 2) / r.height
 }
 
-// multiplier: px of max travel at screen edge
 const blobStyle = (px) => ({
   transform: `translate(${mouseX.value * px}px, ${mouseY.value * px}px)`,
   transition: 'transform 0.15s ease-out',
 })
 
+// ── Hero: Banner image slider ──
+const bannerImages = [
+  '/banner/Cake-scaled1.webp',
+  '/banner/Savory-scaled2.webp',
+  '/banner/Sweets-scaled3.webp',
+  '/banner/Cake-2-scaled4.webp',
+]
+const currentBanner = ref(0)
+let bannerTimer = null
+
 // ── Hero: Count-up for daily orders ──
 const ordersCount = ref(0)
 let countTimer = null
 onMounted(() => {
+  bannerTimer = setInterval(() => {
+    currentBanner.value = (currentBanner.value + 1) % bannerImages.length
+  }, 5500)
+
   countTimer = setInterval(() => {
     if (ordersCount.value < 200) { ordersCount.value += 4 }
     else { ordersCount.value = 200; clearInterval(countTimer) }
   }, 16)
 })
-onUnmounted(() => clearInterval(countTimer))
+onUnmounted(() => {
+  clearInterval(bannerTimer)
+  clearInterval(countTimer)
+})
 
-// ── Hero: Background sparkle dots (fixed positions) ──
+// ── Hero: Background sparkle dots ──
 const bgParticles = [
   { id: 0,  style: { top: '8%',  left: '12%', width: '3px', height: '3px', opacity: '0.35', animation: 'twinkle 2.8s ease-in-out 0.3s infinite alternate' } },
   { id: 1,  style: { top: '22%', left: '78%', width: '2px', height: '2px', opacity: '0.25', animation: 'twinkle 3.4s ease-in-out 1.1s infinite alternate' } },
@@ -562,16 +592,46 @@ const contactInfo = [
 <style scoped>
 @reference "../../css/app.css";
 
-/* ── Hero Background ── */
-.hero-bg {
-  background: linear-gradient(135deg, #1e0730 0%, #2A0D42 25%, #3B145A 55%, #6F2C91 85%, #5A2278 100%);
-  background-size: 300% 300%;
-  animation: hero-gradient 18s ease infinite;
+/* ── Banner image slider ── */
+.banner-slide {
+  opacity: 0;
+  transition: opacity 2s cubic-bezier(0.45, 0, 0.55, 1);
+  z-index: 0;
 }
-@keyframes hero-gradient {
-  0%   { background-position: 0%   50%; }
-  50%  { background-position: 100% 50%; }
-  100% { background-position: 0%   50%; }
+.banner-slide.active {
+  opacity: 1;
+  z-index: 1;
+}
+
+/* Ken Burns zoom — each image slowly grows */
+.banner-img {
+  animation: banner-zoom 14s ease-in-out infinite alternate;
+  will-change: transform;
+}
+@keyframes banner-zoom {
+  from { transform: scale(1.0); }
+  to   { transform: scale(1.10); }
+}
+
+/* Overlay: strong on left (text side) fades to lighter on right (image visible) */
+.banner-overlay {
+  background:
+    linear-gradient(
+      108deg,
+      rgba(10, 3, 25, 0.92)  0%,
+      rgba(20, 6, 40, 0.83)  25%,
+      rgba(40, 12, 65, 0.70) 48%,
+      rgba(80, 30, 110, 0.52) 68%,
+      rgba(111, 44, 145, 0.35) 85%,
+      rgba(111, 44, 145, 0.20) 100%
+    ),
+    linear-gradient(
+      to bottom,
+      rgba(10, 3, 25, 0.35) 0%,
+      transparent 20%,
+      transparent 75%,
+      rgba(10, 3, 25, 0.50) 100%
+    );
 }
 
 /* ── Dot Grid ── */
@@ -589,7 +649,6 @@ const contactInfo = [
   from { opacity: 0; transform: translateY(32px); }
   to   { opacity: 1; transform: translateY(0);    }
 }
-
 
 /* ── CTA Buttons ── */
 .btn-hero-main {
@@ -683,7 +742,6 @@ const contactInfo = [
 
 .orbit-content {
   position: absolute;
-  /* orbit radius = (440/2) - inset-8(32px) = 188px */
   top: -188px;
   left: 0;
   transform: translateX(-50%);
@@ -707,6 +765,4 @@ const contactInfo = [
   from { opacity: 0.1;  transform: scale(0.8); }
   to   { opacity: 0.7;  transform: scale(1.3); }
 }
-
-/* ── Scroll indicator ── */
 </style>
