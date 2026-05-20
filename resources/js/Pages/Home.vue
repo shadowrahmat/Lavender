@@ -9,21 +9,21 @@
       @mousemove="onMouseMove"
     >
       <!-- ── Background image slider ── -->
-      <div class="absolute inset-0 overflow-hidden">
+      <!-- isolation:isolate traps slide z-indices inside; overlay outside is always on top -->
+      <div class="absolute inset-0 overflow-hidden" style="background:#1a0535; isolation:isolate;">
         <div
           v-for="(img, i) in bannerImages" :key="i"
           class="banner-slide absolute inset-0"
-          :class="{ active: i === currentBanner }"
+          :class="{ active: i === currentBanner, prev: i === prevBanner }"
         >
           <img :src="img" alt="" class="banner-img w-full h-full object-cover" :style="{ animationDelay: `${i * -3}s` }">
         </div>
-
-        <!-- Overlay: dark purple gradient for readability + brand feel -->
-        <div class="absolute inset-0 banner-overlay pointer-events-none"></div>
-
-        <!-- Bottom vignette -->
-        <div class="absolute inset-x-0 bottom-0 h-40 bg-linear-to-t from-black/30 to-transparent pointer-events-none"></div>
       </div>
+
+      <!-- Overlay sits OUTSIDE the slides container — completely decoupled from
+           slide transitions, always painted on top, never fades in/out -->
+      <div class="absolute inset-0 banner-overlay pointer-events-none"></div>
+      <div class="absolute inset-x-0 bottom-0 h-40 bg-linear-to-t from-black/30 to-transparent pointer-events-none"></div>
 
       <!-- Dot grid overlay -->
       <div class="absolute inset-0 dot-grid pointer-events-none opacity-[0.045]"></div>
@@ -64,14 +64,14 @@
             </div>
 
             <!-- Headline — staggered lines -->
-            <h1 class="font-display font-bold leading-[1.1] mb-4 sm:mb-6">
+            <h1 class="hero-heading font-display font-bold leading-[1.1] mb-4 sm:mb-6">
               <span class="block text-[2.25rem] sm:text-5xl md:text-6xl lg:text-7xl text-white hero-fade-up" style="animation-delay:0.22s">Freshly Baked</span>
               <span class="block text-[2.25rem] sm:text-5xl md:text-6xl lg:text-7xl text-white hero-fade-up" style="animation-delay:0.38s">Happiness,</span>
-              <span class="block text-[2.25rem] sm:text-5xl md:text-6xl lg:text-7xl text-white/60 hero-fade-up" style="animation-delay:0.54s">Made with Care</span>
+              <span class="block text-[2.25rem] sm:text-5xl md:text-6xl lg:text-7xl text-white/85 hero-fade-up" style="animation-delay:0.54s">Made with Care</span>
             </h1>
 
             <!-- Body -->
-            <p class="text-white/65 text-sm sm:text-base md:text-xl leading-relaxed mb-7 sm:mb-10 max-w-sm sm:max-w-lg mx-auto lg:mx-0 hero-fade-up" style="animation-delay:0.7s">
+            <p class="hero-body text-white/90 text-sm sm:text-base md:text-xl leading-relaxed mb-7 sm:mb-10 max-w-sm sm:max-w-lg mx-auto lg:mx-0 hero-fade-up" style="animation-delay:0.7s">
               Discover cakes, pastries, breads, sweets, and savoury bakery items crafted fresh every day by Lavender Food & Bakery.
             </p>
 
@@ -492,14 +492,19 @@ const bannerImages = [
   '/banner/Cake-2-scaled4.webp',
 ]
 const currentBanner = ref(0)
+const prevBanner = ref(-1)
 let bannerTimer = null
+let transitionTimer = null
 
 // ── Hero: Count-up for daily orders ──
 const ordersCount = ref(0)
 let countTimer = null
 onMounted(() => {
   bannerTimer = setInterval(() => {
+    prevBanner.value = currentBanner.value
     currentBanner.value = (currentBanner.value + 1) % bannerImages.length
+    clearTimeout(transitionTimer)
+    transitionTimer = setTimeout(() => { prevBanner.value = -1 }, 2200)
   }, 5500)
 
   countTimer = setInterval(() => {
@@ -510,6 +515,7 @@ onMounted(() => {
 onUnmounted(() => {
   clearInterval(bannerTimer)
   clearInterval(countTimer)
+  clearTimeout(transitionTimer)
 })
 
 // ── Hero: Background sparkle dots ──
@@ -593,14 +599,21 @@ const contactInfo = [
 @reference "../../css/app.css";
 
 /* ── Banner image slider ── */
+/* Default: hidden with no transition (instant disappear after prev is done) */
 .banner-slide {
   opacity: 0;
-  transition: opacity 2s cubic-bezier(0.45, 0, 0.55, 1);
   z-index: 0;
 }
-.banner-slide.active {
+/* Old slide stays fully opaque underneath while new slides in on top */
+.banner-slide.prev {
   opacity: 1;
   z-index: 1;
+}
+/* New slide fades in on top of the prev — one image is ALWAYS fully opaque */
+.banner-slide.active {
+  opacity: 1;
+  z-index: 2;
+  transition: opacity 2s ease-in-out;
 }
 
 /* Ken Burns zoom — each image slowly grows */
@@ -613,25 +626,38 @@ const contactInfo = [
   to   { transform: scale(1.10); }
 }
 
-/* Overlay: strong on left (text side) fades to lighter on right (image visible) */
+/* Soft purple glassmorphism overlay — images stay visible, text stays readable */
 .banner-overlay {
   background:
+    /* User-specified soft purple gradient — the main glassmorphism layer */
     linear-gradient(
-      108deg,
-      rgba(10, 3, 25, 0.92)  0%,
-      rgba(20, 6, 40, 0.83)  25%,
-      rgba(40, 12, 65, 0.70) 48%,
-      rgba(80, 30, 110, 0.52) 68%,
-      rgba(111, 44, 145, 0.35) 85%,
-      rgba(111, 44, 145, 0.20) 100%
+      135deg,
+      rgba(128,  0, 128, 0.42) 0%,
+      rgba(180, 120, 255, 0.28) 100%
     ),
+    /* Left-side boost so text column is always readable */
+    linear-gradient(
+      to right,
+      rgba(55,  8, 90,  0.55) 0%,
+      rgba(90, 22, 130, 0.35) 40%,
+      transparent              76%
+    ),
+    /* Top/bottom cinematic depth — subtle, no solid black */
     linear-gradient(
       to bottom,
-      rgba(10, 3, 25, 0.35) 0%,
-      transparent 20%,
-      transparent 75%,
-      rgba(10, 3, 25, 0.50) 100%
+      rgba(30, 5, 55, 0.25)  0%,
+      transparent             18%,
+      transparent             72%,
+      rgba(20, 4, 45, 0.45)  100%
     );
+}
+
+/* Hero text contrast — shadow lifts copy off the image on every slide */
+.hero-heading {
+  text-shadow: 0 2px 16px rgba(0,0,0,0.55), 0 1px 4px rgba(0,0,0,0.35);
+}
+.hero-body {
+  text-shadow: 0 1px 10px rgba(0,0,0,0.50);
 }
 
 /* ── Dot Grid ── */
