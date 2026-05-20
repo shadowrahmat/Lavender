@@ -27,9 +27,9 @@
         <!-- Right Actions -->
         <div class="flex items-center gap-1">
 
-          <!-- Search -->
+          <!-- Search Toggle -->
           <button @click="toggleSearch"
-            class="icon-btn" :class="searchOpen ? 'text-primary bg-purple-50' : ''">
+            class="icon-btn" :class="searchOpen ? 'text-primary bg-purple-100/70' : ''">
             <MagnifyingGlassIcon class="w-5 h-5" />
           </button>
 
@@ -52,7 +52,7 @@
             </span>
           </button>
 
-          <!-- User Menu (authenticated) -->
+          <!-- User Menu -->
           <div class="relative" v-if="auth?.user" ref="userMenuRef">
             <button @click="userMenuOpen = !userMenuOpen"
               class="flex items-center gap-1.5 px-1.5 py-1 rounded-xl hover:bg-purple-50 transition-all duration-200 ml-1">
@@ -108,71 +108,81 @@
         </div>
       </div>
 
-      <!-- Search Bar -->
+      <!-- ── Search Bar ── right-aligned below nav row -->
       <transition name="slide-down">
-        <div v-if="searchOpen" class="pb-4 pt-1">
-          <div class="relative max-w-lg mx-auto" ref="searchContainer">
+        <div v-if="searchOpen" class="pb-3.5 pt-0.5">
+          <div class="flex sm:justify-end">
+            <div class="relative w-full sm:w-80 md:w-96" ref="searchContainer">
 
-            <!-- Input row -->
-            <div class="relative flex items-center">
-              <MagnifyingGlassIcon class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted pointer-events-none" />
-              <input
-                v-model="searchQuery"
-                @input="onSearchInput"
-                @keydown.enter.prevent="submitSearch"
-                @keydown.escape="closeSearch"
-                type="text"
-                placeholder="Search cakes, bread, sweets…"
-                autocomplete="off"
-                autofocus
-                class="search-input"
-              >
-              <!-- Spinner -->
-              <div v-if="searchLoading" class="absolute right-3.5 top-1/2 -translate-y-1/2">
-                <div class="w-4 h-4 border-2 border-primary/20 border-t-primary rounded-full animate-spin"></div>
-              </div>
-              <!-- Clear -->
-              <button v-else-if="searchQuery" @click="clearSearch"
-                class="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted hover:text-charcoal transition-colors p-0.5 rounded">
-                <XMarkIcon class="w-3.5 h-3.5" />
-              </button>
-            </div>
-
-            <!-- Results dropdown -->
-            <transition name="dropdown">
-              <div v-if="showResults"
-                class="absolute top-full mt-2 left-0 right-0 bg-white rounded-2xl shadow-xl border border-purple-100/60 overflow-hidden z-50">
-
-                <template v-if="searchResults.length > 0">
-                  <Link v-for="product in searchResults" :key="product.id"
-                    :href="route('shop.show', product.slug)"
-                    @click="closeSearch"
-                    class="flex items-center gap-3 px-4 py-3 hover:bg-purple-50/60 transition-colors group">
-                    <img :src="product.featured_image_url" :alt="product.name"
-                      class="w-10 h-10 object-cover rounded-xl bg-purple-50 shrink-0">
-                    <div class="flex-1 min-w-0">
-                      <p class="text-sm font-medium text-charcoal truncate group-hover:text-primary transition-colors">{{ product.name }}</p>
-                      <p class="text-xs text-muted">{{ product.category }}</p>
-                    </div>
-                    <p class="text-sm font-semibold text-primary shrink-0">৳{{ Number(product.final_price).toFixed(0) }}</p>
-                  </Link>
-
-                  <!-- See all -->
-                  <div class="border-t border-purple-50 px-4 py-2.5">
-                    <button @click="submitSearch"
-                      class="flex items-center justify-center gap-1.5 w-full text-sm text-primary font-medium hover:opacity-80 transition-opacity">
-                      <MagnifyingGlassIcon class="w-3.5 h-3.5" />
-                      See all results for "{{ searchQuery }}"
-                    </button>
-                  </div>
-                </template>
-
-                <!-- No results -->
-                <div v-else-if="!searchLoading" class="px-4 py-6 text-center">
-                  <p class="text-sm text-muted">No products found for "<span class="text-charcoal font-medium">{{ searchQuery }}</span>"</p>
+              <!-- Input -->
+              <div class="relative flex items-center">
+                <MagnifyingGlassIcon class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted pointer-events-none z-10" />
+                <input
+                  v-model="searchQuery"
+                  @input="onSearchInput"
+                  @keydown.enter.prevent="submitSearch"
+                  @keydown.escape="closeSearch"
+                  type="text"
+                  placeholder="Search products…"
+                  autocomplete="off"
+                  autofocus
+                  class="search-input"
+                >
+                <!-- Spinner -->
+                <div v-if="searchLoading" class="absolute right-3.5 top-1/2 -translate-y-1/2">
+                  <div class="w-3.5 h-3.5 border-2 border-primary/20 border-t-primary rounded-full animate-spin"></div>
                 </div>
+                <!-- Clear button -->
+                <button v-else-if="searchQuery" @click="clearSearch"
+                  class="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted/60 hover:text-muted transition-colors p-0.5 rounded">
+                  <XMarkIcon class="w-3.5 h-3.5" />
+                </button>
               </div>
-            </transition>
+
+              <!-- Results dropdown -->
+              <transition name="dropdown">
+                <div v-if="showResults"
+                  class="absolute top-full mt-2 left-0 right-0 bg-white rounded-2xl shadow-xl border border-purple-100/60 overflow-hidden z-50">
+
+                  <template v-if="searchResults.length > 0">
+                    <Link
+                      v-for="product in searchResults" :key="product.id"
+                      :href="route('shop.show', product.slug)"
+                      @click="closeSearch"
+                      class="flex items-center gap-3 px-4 py-3 hover:bg-purple-50/60 transition-colors group">
+                      <img :src="product.featured_image_url" :alt="product.name"
+                        class="w-10 h-10 object-cover rounded-xl bg-purple-50 shrink-0">
+                      <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-charcoal truncate group-hover:text-primary transition-colors">
+                          {{ product.name }}
+                        </p>
+                        <p class="text-xs text-muted">{{ product.category }}</p>
+                      </div>
+                      <p class="text-sm font-semibold text-primary shrink-0">
+                        ৳{{ Number(product.final_price).toFixed(0) }}
+                      </p>
+                    </Link>
+
+                    <!-- See all -->
+                    <div class="border-t border-purple-50">
+                      <button @click="submitSearch"
+                        class="flex items-center justify-center gap-1.5 w-full px-4 py-2.5 text-xs text-primary font-medium hover:bg-purple-50/50 transition-colors">
+                        <MagnifyingGlassIcon class="w-3.5 h-3.5" />
+                        See all results for "{{ searchQuery }}"
+                      </button>
+                    </div>
+                  </template>
+
+                  <!-- No results -->
+                  <div v-else-if="!searchLoading" class="px-4 py-5 text-center">
+                    <p class="text-sm text-muted">
+                      No products found for "<span class="text-charcoal font-medium">{{ searchQuery }}</span>"
+                    </p>
+                  </div>
+                </div>
+              </transition>
+
+            </div>
           </div>
         </div>
       </transition>
@@ -235,16 +245,16 @@ import {
   ArrowRightOnRectangleIcon,
 } from '@heroicons/vue/24/outline'
 
-const page = usePage()
-const auth = page.props.auth
-const cart_count = page.props.cart_count
+const page          = usePage()
+const auth          = page.props.auth
+const cart_count    = page.props.cart_count
 const wishlist_count = page.props.wishlist_count
 
-const scrolled       = ref(false)
-const searchOpen     = ref(false)
-const mobileMenuOpen = ref(false)
-const userMenuOpen   = ref(false)
-const userMenuRef    = ref(null)
+const scrolled        = ref(false)
+const searchOpen      = ref(false)
+const mobileMenuOpen  = ref(false)
+const userMenuOpen    = ref(false)
+const userMenuRef     = ref(null)
 const searchContainer = ref(null)
 
 const searchQuery   = ref('')
@@ -289,7 +299,7 @@ const onSearchInput = () => {
     } finally {
       searchLoading.value = false
     }
-  }, 300)
+  }, 280)
 }
 
 const clearSearch = () => {
@@ -354,24 +364,36 @@ onUnmounted(() => {
   @apply flex items-center gap-3 px-4 py-2 text-sm text-charcoal hover:bg-purple-50 hover:text-primary transition-colors;
 }
 
+/* Compact, modern search input */
 .search-input {
-  @apply w-full pl-10 pr-10 py-2.5 rounded-xl text-sm text-charcoal transition-all duration-200;
+  width: 100%;
+  padding: 0.5rem 2.5rem 0.5rem 2.375rem;
+  border-radius: 12px;
   border: 1.5px solid #E9D8F4;
-  background: #FDFAFF;
+  background: rgba(253, 250, 255, 0.95);
+  font-size: 0.8125rem;
+  color: #1F1B24;
   outline: none;
-}
-.search-input:focus {
-  border-color: #6F2C91;
-  box-shadow: 0 0 0 3px rgba(111, 44, 145, 0.1);
-  background: #fff;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 .search-input::placeholder {
   color: #9d93a0;
 }
+.search-input:focus {
+  border-color: #6F2C91;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(111, 44, 145, 0.1);
+}
 
-.slide-down-enter-active, .slide-down-leave-active { transition: all 0.25s ease; }
-.slide-down-enter-from, .slide-down-leave-to { opacity: 0; transform: translateY(-8px); }
+/* Slide-down for search bar and mobile menu */
+.slide-down-enter-active,
+.slide-down-leave-active { transition: all 0.22s ease; }
+.slide-down-enter-from,
+.slide-down-leave-to    { opacity: 0; transform: translateY(-6px); }
 
-.dropdown-enter-active, .dropdown-leave-active { transition: all 0.2s ease; }
-.dropdown-enter-from, .dropdown-leave-to { opacity: 0; transform: translateY(-6px) scale(0.97); }
+/* Dropdown for user menu + results */
+.dropdown-enter-active,
+.dropdown-leave-active { transition: all 0.18s ease; }
+.dropdown-enter-from,
+.dropdown-leave-to    { opacity: 0; transform: translateY(-5px) scale(0.97); }
 </style>

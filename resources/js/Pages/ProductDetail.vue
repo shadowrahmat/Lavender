@@ -212,7 +212,7 @@ const addToCart = () => {
   }, {
     preserveScroll: true,
     onSuccess: () => {
-      toast.success(`${props.product.name} added to cart!`)
+      toast.success(`${props.product.name} added to cart`)
       adding.value = false
     },
     onError: () => {

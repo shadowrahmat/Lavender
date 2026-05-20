@@ -94,7 +94,7 @@ class CartController extends Controller
             ]));
         }
 
-        return back()->with('success', 'Item added to cart!');
+        return back();
     }
 
     public function update(Request $request, Cart $cart)

@@ -103,7 +103,7 @@ const addToCart = () => {
   adding.value = true
   router.post(route('cart.add'), { product_id: props.product.id, quantity: 1 }, {
     preserveScroll: true,
-    onSuccess: () => { toast.success(`${props.product.name} added to cart!`); adding.value = false },
+    onSuccess: () => { toast.success(`${props.product.name} added to cart`); adding.value = false },
     onError: () => { toast.error('Could not add item to cart.'); adding.value = false },
   })
 }
