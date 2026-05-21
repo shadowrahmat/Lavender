@@ -1,5 +1,5 @@
 <template>
-  <nav class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-purple-100 safe-area-inset">
+  <nav class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-green-100 safe-area-inset">
     <div class="flex items-center justify-around py-2 px-2">
 
       <Link :href="route('home')" class="bottom-nav-item" :class="isActive('home')">
@@ -14,7 +14,7 @@
 
       <!-- Cart (center, elevated) -->
       <button @click="openCart" class="relative flex flex-col items-center gap-1 -mt-6">
-        <div class="w-14 h-14 rounded-2xl gradient-purple flex items-center justify-center shadow-lg shadow-purple-300 relative">
+        <div class="w-14 h-14 rounded-2xl gradient-green flex items-center justify-center shadow-lg shadow-green-300 relative">
           <ShoppingCartIcon class="w-6 h-6 text-white" />
           <span v-if="cart_count > 0"
             class="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-warning text-white text-[10px] flex items-center justify-center font-bold shadow">
@@ -38,7 +38,7 @@
       </Link>
 
       <Link v-if="auth?.user" :href="route('account.dashboard')" class="bottom-nav-item" :class="isActive('account')">
-        <div class="w-7 h-7 rounded-full gradient-purple flex items-center justify-center text-white text-xs font-semibold">
+        <div class="w-7 h-7 rounded-full gradient-green flex items-center justify-center text-white text-xs font-semibold">
           {{ auth.user.name[0].toUpperCase() }}
         </div>
         <span>Account</span>
@@ -63,9 +63,9 @@ import {
   UserPlusIcon,
 } from '@heroicons/vue/24/outline'
 
-const page = usePage()
-const auth = page.props.auth
-const cart_count = page.props.cart_count
+const page           = usePage()
+const auth           = page.props.auth
+const cart_count     = page.props.cart_count
 const wishlist_count = page.props.wishlist_count
 
 const isActive = (name) => route().current(name + '*') ? 'text-primary' : 'text-muted'

@@ -12,7 +12,7 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
 
-const appName = import.meta.env.VITE_APP_NAME || 'Lavender Food & Bakery';
+const appName = import.meta.env.VITE_APP_NAME || 'Lavender Grocery & Mart';
 
 createInertiaApp({
     title: (title) => title ? `${title} - ${appName}` : appName,
@@ -47,7 +47,7 @@ createInertiaApp({
             .mount(el);
     },
     progress: {
-        color: '#6F2C91',
+        color: '#2E9D63',
         showSpinner: true,
     },
 });

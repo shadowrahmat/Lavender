@@ -16,7 +16,7 @@
     </button>
 
     <!-- Product Image -->
-    <Link :href="route('shop.show', product.slug)" class="block overflow-hidden aspect-square bg-purple-50 shrink-0">
+    <Link :href="route('shop.show', product.slug)" class="block overflow-hidden aspect-square bg-green-50 shrink-0">
       <img
         :src="product.featured_image_url || '/images/product-placeholder.jpg'"
         :alt="product.name"
@@ -29,7 +29,7 @@
     <div class="p-2.5 sm:p-4 flex flex-col flex-1">
 
       <!-- Category badge — hidden on mobile to save space -->
-      <span class="hidden sm:inline-flex badge badge-purple mb-2 self-start text-xs">
+      <span class="hidden sm:inline-flex badge badge-green mb-2 self-start text-xs">
         {{ product.category?.name }}
       </span>
 
@@ -46,7 +46,7 @@
       </p>
 
       <!-- Price + Add to Cart: stacked layout -->
-      <div class="mt-auto pt-2 sm:pt-3 border-t border-purple-50">
+      <div class="mt-auto pt-2 sm:pt-3 border-t border-green-50">
         <!-- Price -->
         <div class="flex items-baseline gap-1 mb-1.5 sm:mb-2">
           <span class="text-sm sm:text-base font-bold text-primary leading-none">
