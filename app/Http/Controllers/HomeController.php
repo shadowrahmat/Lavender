@@ -3,8 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Faq;
 use App\Models\Product;
-use App\Models\Banner;
+use App\Models\SitePage;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -73,17 +74,35 @@ class HomeController extends Controller
 
     public function faq(): Response
     {
-        return Inertia::render('Faq');
+        $faqs = Faq::active()->get()->map(fn($f) => [
+            'id'       => $f->id,
+            'question' => $f->question,
+            'answer'   => $f->answer,
+        ]);
+
+        return Inertia::render('Faq', ['faqs' => $faqs]);
     }
 
     public function privacy(): Response
     {
-        return Inertia::render('PrivacyPolicy');
+        $page = SitePage::findBySlug('privacy');
+
+        return Inertia::render('PrivacyPolicy', ['page' => $page ? [
+            'title'        => $page->title,
+            'last_updated' => $page->last_updated,
+            'sections'     => $page->sections ?? [],
+        ] : null]);
     }
 
     public function terms(): Response
     {
-        return Inertia::render('Terms');
+        $page = SitePage::findBySlug('terms');
+
+        return Inertia::render('Terms', ['page' => $page ? [
+            'title'        => $page->title,
+            'last_updated' => $page->last_updated,
+            'sections'     => $page->sections ?? [],
+        ] : null]);
     }
 
     private function formatProduct(Product $product): array

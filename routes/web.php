@@ -17,6 +17,8 @@ use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Admin\CouponController as AdminCouponController;
 use App\Http\Controllers\Admin\MessageController as AdminMessageController;
 use App\Http\Controllers\Admin\SettingController as AdminSettingController;
+use App\Http\Controllers\Admin\FaqController as AdminFaqController;
+use App\Http\Controllers\Admin\PageController as AdminPageController;
 
 // Public routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -113,4 +115,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // Settings
     Route::get('/settings', [AdminSettingController::class, 'index'])->name('settings');
     Route::post('/settings', [AdminSettingController::class, 'update'])->name('settings.update');
+
+    // Content
+    Route::resource('faqs', AdminFaqController::class)->only(['index', 'store', 'update', 'destroy']);
+    Route::get('pages/{slug}/edit', [AdminPageController::class, 'edit'])->name('pages.edit');
+    Route::post('pages/{slug}', [AdminPageController::class, 'update'])->name('pages.update');
 });

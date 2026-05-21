@@ -53,6 +53,16 @@
         Corporate Inquiries
       </SidebarLink>
 
+      <p class="nav-section-label mt-5">Content</p>
+      <SidebarLink :href="route('admin.faqs.index')" :active="route().current('admin.faqs*')">
+        <template #icon><QuestionMarkCircleIcon class="w-4.5 h-4.5" /></template>
+        FAQ
+      </SidebarLink>
+      <SidebarLink :href="route('admin.pages.edit', 'terms')" :active="route().current('admin.pages*')">
+        <template #icon><DocumentTextIcon class="w-4.5 h-4.5" /></template>
+        Pages
+      </SidebarLink>
+
       <p class="nav-section-label mt-5">System</p>
       <SidebarLink :href="route('admin.settings')" :active="route().current('admin.settings*')">
         <template #icon><Cog6ToothIcon class="w-4.5 h-4.5" /></template>
@@ -91,6 +101,8 @@ import {
   Cog6ToothIcon,
   ArrowTopRightOnSquareIcon,
   ArrowRightOnRectangleIcon,
+  QuestionMarkCircleIcon,
+  DocumentTextIcon,
 } from '@heroicons/vue/24/outline'
 </script>
 
