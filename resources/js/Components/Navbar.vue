@@ -54,9 +54,9 @@
           </button>
 
           <!-- User Menu -->
-          <div class="relative" v-if="auth?.user" ref="userMenuRef">
+          <div class="relative hidden md:block" v-if="auth?.user" ref="userMenuRef">
             <button @click="userMenuOpen = !userMenuOpen"
-              class="flex items-center gap-1.5 px-1.5 py-1 rounded-xl hover:bg-purple-50 transition-all duration-200 ml-1">
+              class="avatar-btn flex items-center gap-1.5 px-1.5 py-1 rounded-xl hover:bg-purple-50 transition-all duration-200 ml-1">
               <div class="w-8 h-8 rounded-full gradient-purple flex items-center justify-center text-white text-sm font-semibold shadow-sm">
                 {{ auth.user.name[0].toUpperCase() }}
               </div>
@@ -99,11 +99,14 @@
             Login
           </Link>
 
-          <!-- Mobile Hamburger -->
+          <!-- Mobile Menu Toggle -->
           <button @click="mobileMenuOpen = !mobileMenuOpen"
-            class="md:hidden icon-btn ml-1">
-            <XMarkIcon v-if="mobileMenuOpen" class="w-5 h-5" />
-            <Bars3Icon v-else class="w-5 h-5" />
+            class="md:hidden icon-btn ml-1" aria-label="Toggle menu">
+            <span class="menu-icon" :class="{ 'is-open': mobileMenuOpen }">
+              <span></span>
+              <span></span>
+              <span></span>
+            </span>
           </button>
 
         </div>
@@ -188,50 +191,109 @@
         </div>
       </transition>
 
-      <!-- Mobile Menu -->
-      <transition name="slide-down">
-        <div v-if="mobileMenuOpen"
-          class="md:hidden bg-white rounded-2xl shadow-xl border border-purple-100/60 p-3 mb-4">
-          <div class="flex flex-col gap-0.5">
-            <Link :href="route('home')" class="mobile-nav-link" @click="mobileMenuOpen = false">
-              <HomeIcon class="w-5 h-5" /> Home
-            </Link>
-            <Link :href="route('shop.index')" class="mobile-nav-link" @click="mobileMenuOpen = false">
-              <ShoppingBagIcon class="w-5 h-5" /> Shop
-            </Link>
-            <Link :href="route('about')" class="mobile-nav-link" @click="mobileMenuOpen = false">
-              <InformationCircleIcon class="w-5 h-5" /> About
-            </Link>
-            <Link :href="route('corporate')" class="mobile-nav-link" @click="mobileMenuOpen = false">
-              <BuildingOffice2Icon class="w-5 h-5" /> Corporate
-            </Link>
-            <Link :href="route('contact')" class="mobile-nav-link" @click="mobileMenuOpen = false">
-              <PhoneIcon class="w-5 h-5" /> Contact
-            </Link>
-            <div class="border-t border-purple-100 my-1.5"></div>
-            <Link v-if="!auth?.user" :href="route('login')" class="btn-primary text-center" @click="mobileMenuOpen = false">
-              Login
-            </Link>
-            <Link v-if="!auth?.user" :href="route('register')" class="btn-secondary text-center mt-1" @click="mobileMenuOpen = false">
-              Register
-            </Link>
-          </div>
-        </div>
-      </transition>
     </div>
   </nav>
   <div class="h-16 md:h-20"></div>
+
+  <!-- ── Mobile slide-over panel ── -->
+  <Teleport to="body">
+    <Transition name="menu-backdrop">
+      <div v-if="mobileMenuOpen"
+        class="fixed inset-0 bg-charcoal/50 backdrop-blur-sm z-90 md:hidden"
+        @click="mobileMenuOpen = false">
+      </div>
+    </Transition>
+
+    <Transition name="menu-panel">
+      <div v-if="mobileMenuOpen"
+        class="fixed top-0 right-0 h-full w-75 bg-white z-100 md:hidden flex flex-col shadow-2xl">
+
+        <!-- Header -->
+        <div class="flex items-center justify-between px-5 py-4 border-b border-purple-100">
+          <img src="/images/Lavender-Logo.png" alt="Lavender" class="h-9 w-auto object-contain">
+          <button @click="mobileMenuOpen = false"
+            class="w-9 h-9 rounded-xl bg-purple-50 hover:bg-purple-100 flex items-center justify-center text-muted hover:text-primary transition-all">
+            <XMarkIcon class="w-5 h-5" />
+          </button>
+        </div>
+
+        <!-- Nav links -->
+        <nav class="flex-1 overflow-y-auto px-4 py-5 space-y-1">
+          <Link :href="route('home')" @click="mobileMenuOpen = false"
+            class="panel-link" :class="route().current('home') ? 'panel-link-active' : ''">
+            <HomeIcon class="w-5 h-5" /> Home
+          </Link>
+          <Link :href="route('shop.index')" @click="mobileMenuOpen = false"
+            class="panel-link" :class="route().current('shop*') ? 'panel-link-active' : ''">
+            <ShoppingBagIcon class="w-5 h-5" /> Shop
+          </Link>
+          <Link :href="route('about')" @click="mobileMenuOpen = false"
+            class="panel-link" :class="route().current('about') ? 'panel-link-active' : ''">
+            <InformationCircleIcon class="w-5 h-5" /> About
+          </Link>
+          <Link :href="route('corporate')" @click="mobileMenuOpen = false"
+            class="panel-link" :class="route().current('corporate') ? 'panel-link-active' : ''">
+            <BuildingOffice2Icon class="w-5 h-5" /> Corporate
+          </Link>
+          <Link :href="route('contact')" @click="mobileMenuOpen = false"
+            class="panel-link" :class="route().current('contact') ? 'panel-link-active' : ''">
+            <PhoneIcon class="w-5 h-5" /> Contact
+          </Link>
+
+          <template v-if="auth?.user">
+            <div class="pt-3 pb-1"><div class="h-px bg-purple-100"></div></div>
+            <Link :href="route('account.dashboard')" @click="mobileMenuOpen = false" class="panel-link">
+              <UserCircleIcon class="w-5 h-5" /> My Account
+            </Link>
+            <Link :href="route('account.orders')" @click="mobileMenuOpen = false" class="panel-link">
+              <ClipboardDocumentListIcon class="w-5 h-5" /> My Orders
+            </Link>
+            <Link :href="route('wishlist.index')" @click="mobileMenuOpen = false" class="panel-link">
+              <HeartIcon class="w-5 h-5" /> Wishlist
+            </Link>
+          </template>
+        </nav>
+
+        <!-- Footer: auth -->
+        <div class="px-4 py-5 border-t border-purple-100">
+          <template v-if="auth?.user">
+            <div class="flex items-center gap-3 mb-4 px-1">
+              <div class="w-10 h-10 rounded-full gradient-purple flex items-center justify-center text-white font-semibold text-sm shrink-0">
+                {{ auth.user.name[0].toUpperCase() }}
+              </div>
+              <div class="min-w-0">
+                <p class="text-sm font-semibold text-charcoal truncate">{{ auth.user.name }}</p>
+                <p class="text-xs text-muted truncate">{{ auth.user.email }}</p>
+              </div>
+            </div>
+            <Link :href="route('logout')" method="post" as="button"
+              class="flex items-center gap-2 w-full px-4 py-2.5 rounded-xl text-rose-500 hover:bg-rose-50 text-sm font-medium transition-colors">
+              <ArrowRightOnRectangleIcon class="w-4 h-4" /> Sign Out
+            </Link>
+          </template>
+          <template v-else>
+            <Link :href="route('login')" class="btn-primary w-full justify-center py-2.5 text-sm mb-2.5" @click="mobileMenuOpen = false">
+              Sign In
+            </Link>
+            <Link :href="route('register')" class="btn-secondary w-full justify-center py-2.5 text-sm" @click="mobileMenuOpen = false">
+              Create Account
+            </Link>
+          </template>
+        </div>
+
+      </div>
+    </Transition>
+  </Teleport>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { Link, usePage, router } from '@inertiajs/vue3'
 import axios from 'axios'
 import {
   MagnifyingGlassIcon,
   HeartIcon,
   ShoppingBagIcon,
-  Bars3Icon,
   XMarkIcon,
   HomeIcon,
   InformationCircleIcon,
@@ -337,6 +399,10 @@ const handleOutsideClick = (e) => {
   }
 }
 
+watch(mobileMenuOpen, (open) => {
+  document.body.style.overflow = open ? 'hidden' : ''
+})
+
 onMounted(() => {
   window.addEventListener('scroll', handleScroll)
   document.addEventListener('click', handleOutsideClick)
@@ -344,6 +410,7 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
   document.removeEventListener('click', handleOutsideClick)
+  document.body.style.overflow = ''
   clearTimeout(debounceTimer)
 })
 </script>
@@ -365,6 +432,9 @@ onUnmounted(() => {
 .hero-nav .nav-link::after {
   @apply bg-white;
 }
+.hero-nav .avatar-btn {
+  @apply hover:bg-white/10;
+}
 
 .nav-link {
   @apply text-sm font-medium transition-colors hover:text-primary relative;
@@ -375,9 +445,6 @@ onUnmounted(() => {
 }
 .nav-link:hover::after {
   @apply w-full;
-}
-.mobile-nav-link {
-  @apply flex items-center gap-3 px-4 py-2.5 rounded-xl text-charcoal hover:bg-purple-50 hover:text-primary transition-all duration-200 font-medium text-sm;
 }
 .dropdown-item {
   @apply flex items-center gap-3 px-4 py-2 text-sm text-charcoal hover:bg-purple-50 hover:text-primary transition-colors;
@@ -404,15 +471,58 @@ onUnmounted(() => {
   box-shadow: 0 0 0 3px rgba(111, 44, 145, 0.1);
 }
 
-/* Slide-down for search bar and mobile menu */
+/* Panel nav links */
+.panel-link {
+  @apply flex items-center gap-3.5 px-4 py-3 rounded-2xl text-charcoal hover:bg-purple-50 hover:text-primary transition-all duration-200 font-medium text-sm;
+}
+.panel-link-active {
+  @apply bg-purple-50 text-primary;
+}
+
+/* Animated hamburger → X */
+.menu-icon {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  width: 20px;
+  height: 14px;
+  justify-content: center;
+}
+.menu-icon span {
+  display: block;
+  height: 2px;
+  width: 100%;
+  background: currentColor;
+  border-radius: 2px;
+  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity   0.22s ease,
+              width     0.28s ease;
+  transform-origin: center;
+}
+.menu-icon.is-open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.menu-icon.is-open span:nth-child(2) { opacity: 0; width: 0; }
+.menu-icon.is-open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* Slide-down for search bar */
 .slide-down-enter-active,
 .slide-down-leave-active { transition: all 0.22s ease; }
 .slide-down-enter-from,
 .slide-down-leave-to    { opacity: 0; transform: translateY(-6px); }
 
-/* Dropdown for user menu + results */
+/* Dropdown user menu + search results */
 .dropdown-enter-active,
 .dropdown-leave-active { transition: all 0.18s ease; }
 .dropdown-enter-from,
 .dropdown-leave-to    { opacity: 0; transform: translateY(-5px) scale(0.97); }
+
+/* Mobile slide-over panel */
+.menu-backdrop-enter-active,
+.menu-backdrop-leave-active { transition: opacity 0.28s ease; }
+.menu-backdrop-enter-from,
+.menu-backdrop-leave-to     { opacity: 0; }
+
+.menu-panel-enter-active,
+.menu-panel-leave-active { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+.menu-panel-enter-from,
+.menu-panel-leave-to     { transform: translateX(100%); }
 </style>
