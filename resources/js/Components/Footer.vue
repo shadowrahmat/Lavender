@@ -1,21 +1,21 @@
 <template>
-  <footer class="bg-charcoal text-white">
+  <footer class="bg-charcoal text-white pb-20 md:pb-0">
     <div class="gradient-purple h-1"></div>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-16">
+      <div class="grid grid-cols-2 gap-x-6 gap-y-8 lg:grid-cols-4 lg:gap-10">
 
-        <!-- Brand -->
-        <div class="lg:col-span-1">
-          <div class="mb-5">
+        <!-- Brand — full width on mobile -->
+        <div class="col-span-2 lg:col-span-1">
+          <div class="mb-4">
             <img
               src="/images/Lavender-Logo.png"
               alt="Lavender Food & Bakery"
-              class="h-11 w-auto object-contain"
+              class="h-10 lg:h-11 w-auto object-contain"
               style="filter: brightness(0) invert(1); opacity: 0.9;"
             >
           </div>
-          <p class="text-gray-400 text-sm leading-relaxed mb-6">
+          <p class="text-gray-400 text-sm leading-relaxed mb-5 line-clamp-2 lg:line-clamp-none">
             Lavender Food & Bakery serves fresh cakes, pastries, breads, sweets, and savoury items with care. Every purchase supports a greater purpose.
           </p>
           <div class="flex gap-3">
@@ -32,23 +32,23 @@
           </div>
         </div>
 
-        <!-- Quick Links -->
-        <div>
-          <h4 class="font-display text-base font-semibold text-white mb-5 tracking-wide">Quick Links</h4>
-          <ul class="space-y-3">
+        <!-- Quick Links — half width on mobile -->
+        <div class="col-span-1 lg:col-span-1">
+          <h4 class="font-display text-sm lg:text-base font-semibold text-white mb-4 tracking-wide">Quick Links</h4>
+          <ul class="space-y-2.5">
             <li><Link :href="route('home')" class="footer-link">Home</Link></li>
             <li><Link :href="route('shop.index')" class="footer-link">Shop</Link></li>
             <li><Link :href="route('about')" class="footer-link">About Us</Link></li>
-            <li><Link :href="route('corporate')" class="footer-link">Corporate Orders</Link></li>
+            <li><Link :href="route('corporate')" class="footer-link">Corporate</Link></li>
             <li><Link :href="route('contact')" class="footer-link">Contact</Link></li>
             <li><Link :href="route('order.track')" class="footer-link">Track Order</Link></li>
           </ul>
         </div>
 
-        <!-- Categories -->
-        <div>
-          <h4 class="font-display text-base font-semibold text-white mb-5 tracking-wide">Categories</h4>
-          <ul class="space-y-3">
+        <!-- Categories — half width on mobile -->
+        <div class="col-span-1 lg:col-span-1">
+          <h4 class="font-display text-sm lg:text-base font-semibold text-white mb-4 tracking-wide">Categories</h4>
+          <ul class="space-y-2.5">
             <li><Link :href="route('shop.index', { category: 'cake-pastry' })" class="footer-link">Cake & Pastry</Link></li>
             <li><Link :href="route('shop.index', { category: 'bread-bakery' })" class="footer-link">Bread & Bakery</Link></li>
             <li><Link :href="route('shop.index', { category: 'savoury' })" class="footer-link">Savoury Snacks</Link></li>
@@ -57,23 +57,23 @@
           </ul>
         </div>
 
-        <!-- Contact -->
-        <div>
-          <h4 class="font-display text-base font-semibold text-white mb-5 tracking-wide">Contact Us</h4>
-          <ul class="space-y-4">
+        <!-- Contact — full width on mobile -->
+        <div class="col-span-2 lg:col-span-1">
+          <h4 class="font-display text-sm lg:text-base font-semibold text-white mb-4 tracking-wide">Contact Us</h4>
+          <ul class="space-y-3">
             <li class="flex gap-3 text-gray-400 text-sm">
-              <MapPinIcon class="w-5 h-5 text-primary shrink-0 mt-0.5" />
-              <span>AJ Height, Uttar Badda, Cha-72, 1/D Progoti Shoroni, Dhaka 1212</span>
+              <MapPinIcon class="w-4.5 h-4.5 text-primary shrink-0 mt-0.5" />
+              <span class="leading-relaxed">AJ Height, Uttar Badda, Cha-72, 1/D Progoti Shoroni, Dhaka 1212</span>
             </li>
             <li class="flex gap-3 text-gray-400 text-sm items-start">
-              <PhoneIcon class="w-5 h-5 text-primary shrink-0 mt-0.5" />
+              <PhoneIcon class="w-4.5 h-4.5 text-primary shrink-0 mt-0.5" />
               <div>
                 <a href="tel:+8801730728954" class="block hover:text-primary transition-colors">+8801730-728954</a>
                 <a href="tel:+8801730728905" class="block hover:text-primary transition-colors mt-1">+8801730728905</a>
               </div>
             </li>
             <li class="flex gap-3 text-gray-400 text-sm items-center">
-              <ClockIcon class="w-5 h-5 text-primary shrink-0" />
+              <ClockIcon class="w-4.5 h-4.5 text-primary shrink-0" />
               <span>9:00 AM – 11:00 PM (Daily)</span>
             </li>
           </ul>
@@ -84,16 +84,38 @@
 
     <!-- Bottom Bar -->
     <div class="border-t border-gray-700/50">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col md:flex-row items-center justify-between gap-4">
-        <p class="text-gray-500 text-sm text-center">
-          © {{ new Date().getFullYear() }} Lavender Food & Bakery. All rights reserved. ·
-          <span class="text-purple-400">Supporting Abinta Kabir Foundation School</span>
-        </p>
-        <div class="flex gap-6 text-sm">
-          <Link :href="route('privacy')" class="text-gray-500 hover:text-white transition-colors">Privacy</Link>
-          <Link :href="route('terms')" class="text-gray-500 hover:text-white transition-colors">Terms</Link>
-          <Link :href="route('faq')" class="text-gray-500 hover:text-white transition-colors">FAQ</Link>
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 md:py-6">
+
+        <!-- Mobile layout: centered stack -->
+        <div class="flex flex-col items-center gap-2 md:hidden">
+          <p class="text-gray-500 text-xs text-center">
+            © {{ new Date().getFullYear() }} Lavender Food & Bakery
+          </p>
+          <p class="text-purple-400 text-xs text-center">
+            Supporting Abinta Kabir Foundation School
+          </p>
+          <div class="flex items-center gap-2 text-xs text-gray-500">
+            <Link :href="route('privacy')" class="hover:text-white transition-colors">Privacy</Link>
+            <span>·</span>
+            <Link :href="route('terms')" class="hover:text-white transition-colors">Terms</Link>
+            <span>·</span>
+            <Link :href="route('faq')" class="hover:text-white transition-colors">FAQ</Link>
+          </div>
         </div>
+
+        <!-- Desktop layout: left-right -->
+        <div class="hidden md:flex items-center justify-between gap-4">
+          <p class="text-gray-500 text-sm">
+            © {{ new Date().getFullYear() }} Lavender Food & Bakery. All rights reserved. ·
+            <span class="text-purple-400">Supporting Abinta Kabir Foundation School</span>
+          </p>
+          <div class="flex gap-6 text-sm">
+            <Link :href="route('privacy')" class="text-gray-500 hover:text-white transition-colors">Privacy</Link>
+            <Link :href="route('terms')" class="text-gray-500 hover:text-white transition-colors">Terms</Link>
+            <Link :href="route('faq')" class="text-gray-500 hover:text-white transition-colors">FAQ</Link>
+          </div>
+        </div>
+
       </div>
     </div>
   </footer>
@@ -107,7 +129,7 @@ import { MapPinIcon, PhoneIcon, ClockIcon } from '@heroicons/vue/24/outline'
 <style scoped>
 @reference "../../css/app.css";
 .footer-link {
-  @apply text-gray-400 text-sm hover:text-white transition-all duration-200 hover:translate-x-1 inline-block;
+  @apply text-gray-400 text-xs lg:text-sm hover:text-white transition-all duration-200 hover:translate-x-1 inline-block;
 }
 .social-icon {
   @apply w-9 h-9 rounded-xl bg-gray-800 hover:bg-primary flex items-center justify-center text-gray-400 hover:text-white transition-all duration-200 hover:scale-105;
