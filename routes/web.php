@@ -27,6 +27,9 @@ Route::get('/faq', [HomeController::class, 'faq'])->name('faq');
 Route::get('/privacy-policy', [HomeController::class, 'privacy'])->name('privacy');
 Route::get('/terms-conditions', [HomeController::class, 'terms'])->name('terms');
 
+// Offers page (redirects to shop — keeps Navbar route('offers') from throwing a Ziggy error)
+Route::get('/offers', fn () => redirect()->route('shop.index'))->name('offers');
+
 // Shop routes
 Route::get('/shop', [ShopController::class, 'index'])->name('shop.index');
 Route::get('/shop/{slug}', [ShopController::class, 'show'])->name('shop.show');

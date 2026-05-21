@@ -10,16 +10,16 @@
       class="fixed right-0 top-0 h-full w-full max-w-md bg-white z-50 flex flex-col shadow-2xl">
 
       <!-- Header -->
-      <div class="flex items-center justify-between px-6 py-5 border-b border-green-100 gradient-soft">
+      <div class="flex items-center justify-between px-6 py-5 border-b border-purple-100 gradient-soft">
         <div class="flex items-center gap-3">
           <ShoppingBagIcon class="w-5 h-5 text-primary" />
           <h2 class="font-display text-xl font-semibold text-charcoal">
             Your Cart
-            <span v-if="cart.count > 0" class="ml-2 badge badge-green">{{ cart.count }}</span>
+            <span v-if="cart.count > 0" class="ml-2 badge badge-purple">{{ cart.count }}</span>
           </h2>
         </div>
         <button @click="close"
-          class="p-2 rounded-full hover:bg-green-100 text-muted hover:text-charcoal transition-all duration-200">
+          class="p-2 rounded-full hover:bg-purple-100 text-muted hover:text-charcoal transition-all duration-200">
           <XMarkIcon class="w-5 h-5" />
         </button>
       </div>
@@ -35,11 +35,11 @@
         <!-- Empty -->
         <div v-else-if="!cart.items?.length"
           class="flex flex-col items-center justify-center h-48 text-center">
-          <div class="w-16 h-16 rounded-2xl bg-green-50 flex items-center justify-center mb-4">
+          <div class="w-16 h-16 rounded-2xl bg-purple-50 flex items-center justify-center mb-4">
             <ShoppingBagIcon class="w-8 h-8 text-primary/40" />
           </div>
           <p class="text-charcoal font-semibold mb-1">Your cart is empty</p>
-          <p class="text-muted text-sm mb-4">Add some fresh groceries to get started</p>
+          <p class="text-muted text-sm mb-4">Add some delicious items to get started</p>
           <Link :href="route('shop.index')" @click="close" class="btn-primary text-sm">
             Browse Shop
           </Link>
@@ -48,21 +48,22 @@
         <!-- Items List -->
         <div v-else class="space-y-4">
           <div v-for="item in cart.items" :key="item.id"
-            class="flex gap-4 p-4 bg-green-50/50 rounded-2xl items-start group">
+            class="flex gap-4 p-4 bg-purple-50/50 rounded-2xl items-start group">
             <img :src="item.image" :alt="item.name"
               class="w-16 h-16 object-cover rounded-xl shrink-0">
             <div class="flex-1 min-w-0">
               <p class="font-semibold text-charcoal text-sm leading-tight truncate">{{ item.name }}</p>
               <p class="text-xs text-muted mt-0.5">{{ item.category }}</p>
               <p class="text-primary font-bold mt-1">৳{{ item.price }}</p>
+              <!-- Quantity Controls -->
               <div class="flex items-center gap-2 mt-2">
                 <button @click="updateQty(item, -1)"
-                  class="w-7 h-7 rounded-full bg-white border border-green-200 text-primary hover:bg-primary hover:text-white transition-all duration-150 flex items-center justify-center">
+                  class="w-7 h-7 rounded-full bg-white border border-purple-200 text-primary hover:bg-primary hover:text-white transition-all duration-150 flex items-center justify-center">
                   <MinusIcon class="w-3 h-3" />
                 </button>
                 <span class="text-sm font-semibold text-charcoal w-5 text-center">{{ item.quantity }}</span>
                 <button @click="updateQty(item, 1)"
-                  class="w-7 h-7 rounded-full bg-white border border-green-200 text-primary hover:bg-primary hover:text-white transition-all duration-150 flex items-center justify-center">
+                  class="w-7 h-7 rounded-full bg-white border border-purple-200 text-primary hover:bg-primary hover:text-white transition-all duration-150 flex items-center justify-center">
                   <PlusIcon class="w-3 h-3" />
                 </button>
                 <button @click="removeItem(item.id)"
@@ -78,7 +79,7 @@
       </div>
 
       <!-- Footer Summary -->
-      <div v-if="cart.items?.length" class="px-6 py-5 border-t border-green-100 bg-white">
+      <div v-if="cart.items?.length" class="px-6 py-5 border-t border-purple-100 bg-white">
         <div class="space-y-2 mb-4">
           <div class="flex justify-between text-sm text-muted">
             <span>Subtotal</span>
@@ -90,14 +91,18 @@
               {{ cart.delivery_charge === 0 ? 'FREE' : '৳' + cart.delivery_charge }}
             </span>
           </div>
-          <div class="flex justify-between font-bold text-charcoal pt-2 border-t border-green-100">
+          <div class="flex justify-between font-bold text-charcoal pt-2 border-t border-purple-100">
             <span>Total</span>
             <span class="text-primary text-lg">৳{{ cart.total?.toFixed(2) }}</span>
           </div>
         </div>
         <div class="flex gap-3">
-          <Link :href="route('cart.index')"    @click="close" class="btn-secondary flex-1 text-center text-sm">View Cart</Link>
-          <Link :href="route('checkout.index')" @click="close" class="btn-primary flex-1 text-center text-sm">Checkout</Link>
+          <Link :href="route('cart.index')" @click="close" class="btn-secondary flex-1 text-center text-sm">
+            View Cart
+          </Link>
+          <Link :href="route('checkout.index')" @click="close" class="btn-primary flex-1 text-center text-sm">
+            Checkout
+          </Link>
         </div>
         <p class="text-center text-xs text-muted mt-3">Free delivery on orders over ৳500</p>
       </div>
@@ -118,11 +123,11 @@ import {
   MinusIcon,
 } from '@heroicons/vue/24/outline'
 
-const isOpen  = ref(false)
+const isOpen = ref(false)
 const loading = ref(false)
-const cart    = ref({ items: [], count: 0, subtotal: 0, delivery_charge: 60, total: 0 })
+const cart = ref({ items: [], count: 0, subtotal: 0, delivery_charge: 60, total: 0 })
 
-const open  = async () => { isOpen.value = true; await fetchCart() }
+const open = async () => { isOpen.value = true; await fetchCart() }
 const close = () => { isOpen.value = false }
 
 const fetchCart = async () => {
