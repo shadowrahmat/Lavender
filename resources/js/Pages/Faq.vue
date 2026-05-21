@@ -62,7 +62,7 @@ import { ref } from 'vue'
 import { Head } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
 
-const openIndex = ref(null)
+const openIndex = ref(0)
 
 const faqs = [
   { q: 'Where is Lavender Food & Bakery located?', a: 'We are located at AJ Height, Uttar Badda, Cha-72, 1/D Progoti Shoroni, Dhaka 1212. You can visit us daily from 9:00 AM to 11:00 PM.' },
