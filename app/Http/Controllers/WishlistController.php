@@ -33,7 +33,7 @@ class WishlistController extends Controller
                 ],
             ]);
 
-        return Inertia::render('Wishlist', ['wishlists' => $wishlists]);
+        return Inertia::render('Account/Wishlist', ['wishlists' => $wishlists]);
     }
 
     public function toggle(Request $request)

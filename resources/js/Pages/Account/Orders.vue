@@ -1,42 +1,67 @@
 <template>
-  <AppLayout>
+  <AccountLayout>
     <Head title="My Orders" />
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div class="flex items-center justify-between mb-8">
-        <h1 class="font-display text-3xl font-bold text-charcoal">My Orders</h1>
-        <Link :href="route('account.dashboard')" class="text-primary text-sm hover:underline">← Back to Dashboard</Link>
+
+    <div class="space-y-5">
+
+      <div>
+        <h1 class="font-display text-2xl font-bold text-charcoal">My Orders</h1>
+        <p class="text-muted text-sm mt-1">Track and review all your past orders</p>
       </div>
 
-      <div v-if="orders.data?.length" class="space-y-4">
-        <div v-for="order in orders.data" :key="order.id"
-          class="card p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div>
-            <p class="font-bold text-charcoal">{{ order.order_number }}</p>
-            <p class="text-muted text-sm mt-0.5">{{ order.created_at }} · {{ order.items_count }} items</p>
-            <p class="text-muted text-sm">{{ order.payment_method.toUpperCase() }}</p>
+      <div v-if="orders.data?.length" class="bg-white rounded-2xl shadow-sm border border-purple-100/50 overflow-hidden">
+        <Link v-for="order in orders.data" :key="order.id"
+          :href="route('account.orders.show', order.id)"
+          class="flex items-center gap-4 px-5 py-4 hover:bg-purple-50/50 transition-colors border-b border-purple-50/70 last:border-0 group">
+
+          <!-- Icon -->
+          <div class="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center shrink-0">
+            <ArchiveBoxIcon class="w-5 h-5 text-primary" />
           </div>
-          <span :class="{
+
+          <!-- Info -->
+          <div class="flex-1 min-w-0">
+            <p class="font-semibold text-charcoal text-sm group-hover:text-primary transition-colors">
+              {{ order.order_number }}
+            </p>
+            <p class="text-muted text-xs mt-0.5">
+              {{ order.created_at }} · {{ order.items_count }} item{{ order.items_count !== 1 ? 's' : '' }}
+            </p>
+          </div>
+
+          <!-- Status -->
+          <span class="badge text-xs shrink-0 hidden sm:inline-flex" :class="{
             'badge-warning': order.status === 'pending',
             'badge-success': order.status === 'completed',
-            'badge-error': order.status === 'cancelled',
-            'badge-purple': !['pending', 'completed', 'cancelled'].includes(order.status),
-          }" class="badge">{{ order.status_label }}</span>
-          <div class="text-right">
-            <p class="font-bold text-primary text-lg">৳{{ Number(order.total).toFixed(2) }}</p>
-            <Link :href="route('account.orders.show', order.id)" class="text-sm text-primary hover:underline">View Details</Link>
-          </div>
+            'badge-error':   order.status === 'cancelled',
+            'badge-purple':  !['pending','completed','cancelled'].includes(order.status),
+          }">{{ order.status_label }}</span>
+
+          <!-- Amount -->
+          <p class="font-bold text-primary text-sm shrink-0">৳{{ Number(order.total).toFixed(0) }}</p>
+
+          <!-- Arrow -->
+          <ChevronRightIcon class="w-4 h-4 text-muted group-hover:text-primary transition-colors shrink-0" />
+        </Link>
+      </div>
+
+      <div v-else class="bg-white rounded-2xl shadow-sm border border-purple-100/50 px-6 py-20 text-center">
+        <div class="w-20 h-20 rounded-2xl bg-purple-100 flex items-center justify-center mx-auto mb-5">
+          <ArchiveBoxIcon class="w-10 h-10 text-primary" />
         </div>
+        <h2 class="font-display text-xl font-bold text-charcoal mb-2">No orders yet</h2>
+        <p class="text-muted text-sm mb-6">Looks like you haven't placed any orders. Start shopping!</p>
+        <Link :href="route('shop.index')" class="btn-primary text-sm py-2.5 px-6">Browse Products</Link>
       </div>
-      <div v-else class="text-center py-20">
-        <div class="text-7xl mb-4">📦</div>
-        <h2 class="font-display text-2xl font-bold text-charcoal mb-3">No orders yet</h2>
-        <Link :href="route('shop.index')" class="btn-primary">Start Shopping</Link>
-      </div>
+
     </div>
-  </AppLayout>
+  </AccountLayout>
 </template>
+
 <script setup>
 import { Head, Link } from '@inertiajs/vue3'
-import AppLayout from '@/Layouts/AppLayout.vue'
+import AccountLayout from '@/Layouts/AccountLayout.vue'
+import { ArchiveBoxIcon, ChevronRightIcon } from '@heroicons/vue/24/outline'
+
 defineProps({ orders: Object })
 </script>

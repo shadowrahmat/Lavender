@@ -14,6 +14,7 @@ class AccountController extends Controller
     {
         $user = Auth::user();
         $recentOrders = $user->orders()->latest()->take(5)->get()->map(fn($o) => [
+            'id' => $o->id,
             'order_number' => $o->order_number,
             'status' => $o->status,
             'status_label' => $o->status_label,
