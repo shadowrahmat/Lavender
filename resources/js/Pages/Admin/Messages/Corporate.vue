@@ -39,6 +39,20 @@
 
               <p class="text-sm text-muted">{{ inq.requirements }}</p>
 
+              <!-- Design files -->
+              <div v-if="inq.design_files?.length" class="mt-3">
+                <p class="text-xs font-semibold text-charcoal mb-2">Design Files ({{ inq.design_files.length }})</p>
+                <div class="flex flex-wrap gap-2">
+                  <a v-for="(path, fi) in inq.design_files" :key="fi"
+                    :href="'/storage/' + path"
+                    target="_blank"
+                    class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-purple-50 border border-purple-200 text-xs text-primary hover:bg-purple-100 transition-colors">
+                    <PaperClipIcon class="w-3.5 h-3.5 shrink-0" />
+                    {{ fileName(path) }}
+                  </a>
+                </div>
+              </div>
+
               <div class="flex items-center gap-4 mt-3 text-xs text-muted">
                 <a :href="'mailto:' + inq.email" class="hover:text-primary">{{ inq.email }}</a>
                 <span>{{ inq.phone }}</span>
@@ -79,10 +93,13 @@
 <script setup>
 import { Head, Link, router } from '@inertiajs/vue3'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
+import { PaperClipIcon } from '@heroicons/vue/24/outline'
 
 defineProps({ inquiries: Object })
 
 const markRead = (inq) => {
   router.patch(route('admin.messages.corporate.read', inq.id))
 }
+
+const fileName = (path) => path.split('/').pop()
 </script>
