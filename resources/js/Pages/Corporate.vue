@@ -111,12 +111,13 @@
             <!-- File Upload -->
             <div>
               <label class="text-sm font-medium text-charcoal mb-1.5 block">
-                Design Files
-                <span class="text-muted font-normal ml-1">(optional — images or PDF, max 5 files, 5 MB each)</span>
+                Design File
+                <span class="text-muted font-normal ml-1">(optional — JPG, PNG, GIF or PDF, max 10 MB)</span>
               </label>
 
-              <!-- Drop zone -->
+              <!-- Drop zone — hidden once a file is chosen -->
               <div
+                v-if="!selectedFiles.length"
                 class="drop-zone"
                 :class="{ 'drop-zone-over': isDragging }"
                 @dragover.prevent="isDragging = true"
@@ -137,7 +138,7 @@
                     <ArrowUpTrayIcon class="w-5 h-5 text-primary" />
                   </div>
                   <p class="text-sm text-charcoal font-medium">Drop files here or <span class="text-primary">browse</span></p>
-                  <p class="text-xs text-muted">JPG, PNG, GIF, PDF · up to 5 MB each</p>
+                  <p class="text-xs text-muted">JPG, PNG, GIF, PDF · up to 10 MB</p>
                 </div>
               </div>
 
@@ -159,7 +160,7 @@
                     <p class="text-xs text-muted">{{ formatSize(file.size) }}</p>
                   </div>
 
-                  <button type="button" @click.stop="removeFile(i)"
+                  <button type="button" @click.stop="removeFile()"
                     class="w-6 h-6 rounded-full bg-white border border-purple-200 flex items-center justify-center hover:bg-red-50 hover:border-red-300 transition-colors shrink-0">
                     <XMarkIcon class="w-3.5 h-3.5 text-muted hover:text-error" />
                   </button>
@@ -214,25 +215,27 @@ const form = useForm({
 })
 
 const addFiles = (files) => {
-  const allowed = Array.from(files).filter(f => {
-    const ok = /\.(jpe?g|png|gif|pdf)$/i.test(f.name) && f.size <= 5 * 1024 * 1024
-    if (!ok) toast.error(`${f.name} is not allowed (must be JPG/PNG/GIF/PDF under 5 MB).`)
-    return ok
-  })
-  const remaining = 5 - selectedFiles.value.length
-  const toAdd = allowed.slice(0, remaining)
-  if (allowed.length > remaining) toast.warning(`Only ${remaining} more file(s) can be added (max 5).`)
+  const file = Array.from(files)[0]
+  if (!file) return
 
-  toAdd.forEach(file => {
-    selectedFiles.value.push(file)
-    if (file.type.startsWith('image/')) {
-      const reader = new FileReader()
-      reader.onload = e => previews.value.push(e.target.result)
-      reader.readAsDataURL(file)
-    } else {
-      previews.value.push(null)
-    }
-  })
+  if (!/\.(jpe?g|png|gif|pdf)$/i.test(file.name)) {
+    toast.error('Only JPG, PNG, GIF, or PDF files are allowed.')
+    return
+  }
+  if (file.size > 10 * 1024 * 1024) {
+    toast.error('File must be under 10 MB.')
+    return
+  }
+
+  selectedFiles.value = [file]
+  previews.value = []
+  if (file.type.startsWith('image/')) {
+    const reader = new FileReader()
+    reader.onload = e => (previews.value = [e.target.result])
+    reader.readAsDataURL(file)
+  } else {
+    previews.value = [null]
+  }
   form.design_files = selectedFiles.value
 }
 
@@ -243,10 +246,10 @@ const onDrop = (e) => {
   addFiles(e.dataTransfer.files)
 }
 
-const removeFile = (index) => {
-  selectedFiles.value.splice(index, 1)
-  previews.value.splice(index, 1)
-  form.design_files = selectedFiles.value
+const removeFile = () => {
+  selectedFiles.value = []
+  previews.value = []
+  form.design_files = []
   if (fileInput.value) fileInput.value.value = ''
 }
 

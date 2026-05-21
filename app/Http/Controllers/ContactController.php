@@ -35,8 +35,8 @@ class ContactController extends Controller
             'expected_quantity' => 'nullable|integer|min:1',
             'required_date'     => 'nullable|date|after:today',
             'requirements'      => 'nullable|string|max:2000',
-            'design_files'      => 'nullable|array|max:5',
-            'design_files.*'    => 'file|mimes:jpg,jpeg,png,gif,pdf|max:5120',
+            'design_files'      => 'nullable|array|max:1',
+            'design_files.*'    => 'file|mimes:jpg,jpeg,png,gif,pdf|max:10240',
         ]);
 
         $filePaths = [];
